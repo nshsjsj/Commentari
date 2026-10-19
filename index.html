@@ -148,18 +148,24 @@ let st={b:null,c:null,v:null};
 
 function sl(b){return b[1]==='songs'?'song-of-solomon':b[1].replace('_','-');}
 function links(b,c,v){
-  const s=sl(b), bh=b[1];
-  const L=[
-    ["Matthew Henry","Commentario completo, sul capitolo "+c,`https://www.studylight.org/commentaries/eng/mhm/${s}-${c}.html`],
-    ["Jamieson-Fausset-Brown","Commentario sul capitolo "+c,`https://www.studylight.org/commentaries/eng/jfb/${s}-${c}.html`],
-    ["David Guzik (Enduring Word)","Commentario sul capitolo "+c,`https://enduringword.com/bible-commentary/${b[2]}-${c}/`],
-    ["John Gill","Exposition of the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/gill/${bh}/${c}.htm`],
-    ["Albert Barnes","Notes on the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/barnes/${bh}/${c}.htm`],
-    ["Adam Clarke","Commentary on the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/clarke/${bh}/${c}.htm`]
-  ];
+  const s=sl(b), bh=b[1], i=B.indexOf(b), AT=i<39;
+  const GODET={41:["Vangelo di Luca","https://biblicalstudies.org.uk/blog/frederic-godets-commentary-on-the-gospel-of-luke/"],
+    42:["Vangelo di Giovanni","https://biblicalstudies.org.uk/book_gospel-of-john_godet.html"],
+    44:["Romani","https://biblicalstudies.org.uk/book_romans_godet.html"],
+    45:["1 Corinzi","https://biblicalstudies.org.uk/book_commentary-on-first-corinthians_godet.html"]};
+  const L=[];
+  L.push(["Matthew Henry","Commentario completo, sul capitolo "+c,`https://www.studylight.org/commentaries/eng/mhm/${s}-${c}.html`]);
+  L.push(["Jamieson-Fausset-Brown","Commentario sul capitolo "+c,`https://www.studylight.org/commentaries/eng/jfb/${s}-${c}.html`]);
+  if(AT) L.push(["Keil & Delitzsch","Commentario all'Antico Testamento, sul capitolo "+c,`https://biblehub.com/commentaries/kad/${bh}/${c}.htm`]);
+  if(GODET[i]) L.push(["Frédéric Godet","Commentario a "+GODET[i][0]+" (PDF da scaricare): cerca il capitolo "+c,GODET[i][1]]);
+  if(!AT) L.push(["Bengel (Gnomon)","Gnomon del Nuovo Testamento, sul capitolo "+c,`https://biblehub.com/commentaries/bengel/${bh}/${c}.htm`]);
   L.push(["Thomas Constable","Expository Notes (Sonic Light), sul capitolo "+c,`https://www.studylight.org/commentaries/eng/dcc/${s}-${c}.html`]);
+  L.push(["David Guzik (Enduring Word)","Commentario sul capitolo "+c,`https://enduringword.com/bible-commentary/${b[2]}-${c}/`]);
+  L.push(["Albert Barnes","Notes on the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/barnes/${bh}/${c}.htm`]);
+  L.push(["John Gill","Exposition of the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/gill/${bh}/${c}.htm`]);
+  L.push(["Ellicott","Commentary for English Readers, sul capitolo "+c,`https://biblehub.com/commentaries/ellicott/${bh}/${c}.htm`]);
+  L.push(["Pulpit Commentary","Spiegazione, omiletica e omelie, sul capitolo "+c,`https://biblehub.com/commentaries/pulpit/${bh}/${c}.htm`]);
   L.push(["NET Bible","Traduzione con le note dei traduttori, sul capitolo "+c,`https://netbible.org/bible/${(bh==='songs'?'Song+of+Solomon':bh.split('_').map(w=>w[0].toUpperCase()+w.slice(1)).join('+'))}+${c}`]);
-  L.push(["Tutti i commentari su questo versetto","Bible Hub: molti commentari insieme, sul versetto "+v,`https://biblehub.com/commentaries/${bh}/${c}-${v}.htm`]);
   return L;
 }
 
