@@ -38,7 +38,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .wrap{max-width:760px;margin:0 auto;padding-block:16px 110px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h2.testamento{font-size:1.9rem;font-weight:800;margin:22px 0 6px;letter-spacing:-.02em}
-h2.testamento:not(:first-child){margin-top:64px;padding-top:28px;border-top:1px solid var(--line)}
+h2.testamento ~ h2.testamento{margin-top:64px;padding-top:28px;border-top:1px solid var(--line)}
 .label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
 .books{display:flex;flex-wrap:wrap;gap:8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px}
@@ -54,9 +54,43 @@ h2.testamento:not(:first-child){margin-top:64px;padding-top:28px;border-top:1px 
 .link strong{display:block;font-size:1.02rem;font-weight:700}
 .link small{color:var(--muted);font-size:.85rem}
 .link .go{color:var(--accent);font-weight:800;font-size:1.2rem}
+.corso-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;position:relative;text-align:left;
+  background:var(--accent);color:#fff;border:0;border-radius:16px;padding:18px 44px 18px 18px;margin-top:8px;cursor:pointer;font:inherit}
+.corso-btn strong{font-size:1.15rem;font-weight:800}.corso-btn small{opacity:.85;font-size:.88rem}
+.corso-btn .go{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#fff;font-size:1.5rem;font-weight:800}
+button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;margin-top:8px}
+.tab{background:none;border:0;border-radius:10px;padding:12px 6px;font:700 15px var(--font);color:var(--muted);cursor:pointer}
+.tab.on{background:var(--accent);color:#fff}
+.cerca{display:flex;gap:8px;margin-top:12px}
+.cerca input{flex:1;min-width:0;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:13px 14px;font:16px var(--font)}
+.cerca input:focus{outline:none;border-color:var(--accent)}
+.cerca button{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:0 20px;font:700 15px var(--font);cursor:pointer}
+.err{color:#e5484d;font-size:.88rem;margin:8px 2px 0}
+.eyebrow-p{color:var(--muted);margin:0 0 8px;font-size:.9rem}
+.scelte{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.scelta{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:18px;padding:26px 48px 26px 20px;cursor:pointer;font:inherit}
+.scelta strong{font-size:1.4rem;font-weight:800}.scelta small{color:var(--muted);font-size:.92rem}
+.scelta .go{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:1.6rem;font-weight:800}
+.scelta:hover,.scelta:focus-visible{border-color:var(--accent);outline:none}
+.sec{display:block;width:100%;margin-top:10px;background:var(--surface);color:var(--accent);border:1px solid var(--line);border-radius:12px;padding:12px;font:600 15px var(--font);cursor:pointer}
+.azioni{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.az{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--accent);color:#fff;border:0;border-radius:14px;padding:16px 18px;cursor:pointer;font:inherit}
+.az strong{font-size:1.08rem;font-weight:800}.az small{opacity:.88;font-size:.86rem}
+.az + .az{background:var(--surface);color:var(--fg);border:1px solid var(--line)}.az + .az small{color:var(--muted);opacity:1}
 h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 .note{color:var(--muted);font-size:.85rem;margin-top:16px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+@media (hover:hover){
+  .btn,.link,.scelta,.az,.sec{transition:background .18s,color .18s,border-color .18s,transform .18s}
+  .btn:hover,.link:hover,.scelta:hover,.az:hover,.az + .az:hover,.sec:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(1.03);text-decoration:none}
+  .link:hover small,.scelta:hover small,.az:hover small,.az + .az:hover small,.link:hover .go,.scelta:hover .go{color:#fff}
+  .link:hover strong{text-decoration:none}
+  .back{transition:background .18s,transform .18s}
+  .back:hover{background:var(--accent);transform:scale(1.06)}
+}
+@media (prefers-reduced-motion:reduce){.btn:hover,.link:hover,.scelta:hover,.az:hover,.sec:hover,.back:hover{transform:none}}
 </style>
 
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}*{box-sizing:border-box}</style>
@@ -143,6 +177,150 @@ const SEZ=[
  ["Nuovo Testamento",[["Vangeli",39,43],["Storia della Chiesa",43,44],["Lettere di Paolo",44,57],["Lettere generali",57,65],["Profezia",65,66]]]
 ];
 
+// ===== CORSO BIBLICO =====
+const GQ='https://www.gotquestions.org/Italiano/';
+const HODGE=['https://ccel.org/ccel/hodge/theology1','https://www.ccel.org/ccel/hodge/theology2','https://ccel.org/ccel/hodge/theology3'];
+const STRONG=['https://commons.ptsem.edu/id/systematictheolo01stro','https://commons.ptsem.edu/id/systematictheolo02stro','https://commons.ptsem.edu/id/systematicthe03stro'];
+const AG=['Assemblee di Dio (USA) – Che cosa crediamo','Dottrine ufficiali delle Assemblee di Dio (pentecostali)','https://men.ag.org/Growth-Studies/Identity/What-We-Believe'];
+const H=(v,d)=>['Hodge – Systematic Theology, vol. '+v,'Teologia sistematica presbiteriana (1872) – '+d,HODGE[v-1]];
+const S=(v,d)=>['Strong – Systematic Theology, vol. '+v,'Teologia sistematica battista (1907) – '+d,STRONG[v-1]];
+const SCHAFF=(v,d)=>['Schaff – History of the Christian Church, vol. '+v,d,'https://ccel.org/ccel/schaff/hcc'+v];
+// [num, titolo, tipo, parola chiave IT, parola chiave EN, link diretti, libri]
+const CORSO=[
+["Fondamenti",[
+ ["M1","Introduzione alla Teologia 1/2: teoria","testo","teologia","introduction to theology",[
+   ['GotQuestions – Perché studiare teologia?','In italiano',GQ+'Printer/perche-studiare-teologia-PF.html'],
+   ['GotQuestions – Tipi di teologia','Le branche della teologia, in italiano',GQ+'Printer/tipi-di-teologia-PF.html'],
+   H(1,'introduzione, metodo e dottrina di Dio')]],
+ ["M2","Introduzione alla Teologia 2/2: versetti","versetti","rivelazione di Dio","revelation of God",[H(1,'rivelazione e Scrittura')]],
+ ["M3","Ispirazione e Storia della Bibbia","testo","ispirazione della Bibbia","inspiration of Scripture",[H(1,'ispirazione della Scrittura'),S(1,'la Scrittura come rivelazione'),AG]],
+ ["M4","Principi di Ermeneutica","testo","ermeneutica biblica","hermeneutics",[]]
+]],
+["Dottrine",[
+ ["M5","Teologia Propria (Dio)","versetti","attributi di Dio","doctrine of God",[H(1,'esistenza, natura e attributi di Dio, Trinità'),S(1,'Dio e la Trinità'),AG]],
+ ["M6","Cristologia","versetti","cristologia","christology",[
+   ['GotQuestions – Che cos\'è la cristologia?','In italiano',GQ+'cristologia.html'],
+   ['GotQuestions – Domande su Gesù Cristo','Raccolta di articoli in italiano',GQ+'questioni-Gesu-Cristo.html'],
+   ['Warfield – The Person and Work of Christ','Studio classico sulla persona e l\'opera di Cristo','https://www.monergism.com/person-and-work-christ-ebook'],
+   ['John Owen – Opere vol. 1 (cristologia)','PDF, puritano','https://wesleyscholar.com/wp-content/uploads/2019/02/Works-of-Owen-vol-1-Christology-Catechism.pdf'],
+   H(2,'la persona di Cristo'),AG]],
+ ["M7","Pneumatologia (Spirito Santo)","versetti","Spirito Santo","Holy Spirit baptism",[
+   ['GotQuestions – Il ruolo dello Spirito Santo','In italiano',GQ+'Printer/ruolo-Spirito-Santo-PF.html'],AG]],
+ ["M8","Angelologia","versetti","angeli demoni","angelology",[
+   ['GotQuestions – Lo scopo degli angeli','In italiano',GQ+'Printer/scopo-degli-angeli-PF.html'],H(1,'angeli')]],
+ ["M9","Antropologia Biblica","versetti","natura umana anima spirito","biblical anthropology",[H(2,'origine e natura dell\'uomo'),S(2,'antropologia')]],
+ ["M10","Amartiologia (peccato)","versetti","amartiologia peccato","doctrine of sin",[
+   ['GotQuestions – Che cos\'è l\'amartiologia?','In italiano',GQ+'Printer/amartiologia-PF.html'],H(2,'il peccato'),S(2,'il peccato')]],
+ ["M11","Soteriologia (salvezza)","versetti","soteriologia salvezza","soteriology",[
+   ['GotQuestions – Che cos\'è la soteriologia?','In italiano',GQ+'soteriologia.html'],
+   ['GotQuestions – Per grazia mediante la fede','In italiano',GQ+'per-grazia-mediante-la-fede.html'],H(3,'chiamata, giustificazione, santificazione'),AG]],
+ ["M12","Ecclesiologia (chiesa)","versetti","chiesa ecclesiologia","ecclesiology",[S(3,'la Chiesa'),H(3,'mezzi di grazia, sacramenti'),AG]],
+ ["M13","Carismatica (doni spirituali)","versetti","doni spirituali","spiritual gifts",[AG]],
+ ["M14","Escatologia (ultimi tempi)","versetti","ultimi tempi","eschatology rapture",[
+   ['GotQuestions – Profezia degli ultimi tempi','In italiano',GQ+'ultimi-tempi-profezia.html'],
+   ['GotQuestions – Cronologia della fine dei tempi','In italiano',GQ+'Printer/cronologia-della-fine-dei-tempi-PF.html'],H(3,'escatologia'),AG]],
+ ["M15","Frutto dello Spirito","versetti","frutto dello Spirito","fruit of the Spirit",[]],
+ ["M16","Etica Biblica","versetti","etica cristiana","Christian ethics",[H(3,'la legge morale')]],
+ ["M17","Tipologia","versetti","tipologia biblica","biblical typology",[]]
+]],
+["Antico Testamento",[
+ ["M18","Geografia Biblica","testo","geografia biblica","Bible geography",[]],
+ ["M19","Usi e Costumi della Bibbia","testo","usanze bibliche","Bible manners and customs",[]],
+ ["M20","Storia del Vicino Oriente Antico e d'Israele 1/2","testo","storia di Israele","history of Israel",[]],
+ ["M21","Storia del Vicino Oriente Antico e d'Israele 2/2","testo","storia di Israele","history of Israel",[]],
+ ["M22","Introduzione all'Antico Testamento","testo","Antico Testamento","Old Testament introduction",[]],
+ ["M23","Pentateuco 1/2: introduzione generale, Genesi","libri","Pentateuco","Pentateuch",[],[0]],
+ ["M24","Pentateuco 2/2: Esodo, Levitico, Numeri, Deuteronomio","libri","Pentateuco","Pentateuch",[],[1,2,3,4]],
+ ["M25","Libri Storici 1/3: Giosuè, Giudici, Rut, 1 Samuele","libri","libri storici","historical books",[],[5,6,7,8]],
+ ["M26","Libri Storici 2/3: 2 Samuele, 1 Re, 2 Re","libri","libri storici","historical books",[],[9,10,11]],
+ ["M27","Libri Storici 3/3: 1-2 Cronache, Esdra, Neemia, Ester","libri","libri storici","historical books",[],[12,13,14,15,16]],
+ ["M28","Libri Poetici 1/2: Giobbe, Salmi","libri","libri poetici","poetic books",[],[17,18]],
+ ["M29","Libri Poetici 2/2: Proverbi, Ecclesiaste, Cantico","libri","libri poetici","wisdom literature",[],[19,20,21]],
+ ["M30","Profeti Maggiori 1/2: Isaia, Geremia, Lamentazioni","libri","profeti","major prophets",[],[22,23,24]],
+ ["M31","Profeti Maggiori 2/2: Ezechiele, Daniele","libri","profeti","major prophets",[],[25,26]],
+ ["M32","Profeti Minori 1/3: Osea, Gioele, Amos, Abdia","libri","profeti minori","minor prophets",[],[27,28,29,30]],
+ ["M33","Profeti Minori 2/3: Giona, Michea, Naum, Abacuc","libri","profeti minori","minor prophets",[],[31,32,33,34]],
+ ["M34","Profeti Minori 3/3: Sofonia, Aggeo, Zaccaria, Malachia","libri","profeti minori","minor prophets",[],[35,36,37,38]]
+]],
+["Nuovo Testamento",[
+ ["M35","Introduzione al Nuovo Testamento","testo","Nuovo Testamento","New Testament introduction",[]],
+ ["M36","Vita di Gesù","libri","vita di Gesù","life of Christ chronology",[],[39,40,41,42]],
+ ["M37","Vangeli 1/2: Matteo, Marco","libri","Vangeli","Gospels",[],[39,40]],
+ ["M38","Vangeli 2/2: Luca, Giovanni","libri","Vangeli","Gospels",[],[41,42]],
+ ["M39","Discorsi di Gesù","versetti","insegnamenti di Gesù","teachings of Jesus",[]],
+ ["M40","Miracoli di Gesù","versetti","miracoli di Gesù","miracles of Jesus",[]],
+ ["M41","Parabole di Gesù","versetti","parabole di Gesù","parables of Jesus",[]],
+ ["M42","Atti degli Apostoli","libri","Atti degli Apostoli","Acts",[],[43]],
+ ["M43","Vita di Paolo","libri","apostolo Paolo","life of Paul chronology",[],[43]],
+ ["M44","Epistole Paoline 1/3: Romani, 1-2 Corinzi","libri","lettere di Paolo","Pauline epistles",[],[44,45,46]],
+ ["M45","Epistole Paoline 2/3: Galati – 2 Tessalonicesi","libri","lettere di Paolo","Pauline epistles",[],[47,48,49,50,51,52]],
+ ["M46","Epistole Paoline 3/3: 1-2 Timoteo, Tito, Filemone","libri","lettere pastorali","pastoral epistles",[],[53,54,55,56]],
+ ["M47","Ebrei ed Epistole Generali 1/2: Ebrei, Giacomo, 1-2 Pietro","libri","epistole generali","general epistles",[],[57,58,59,60]],
+ ["M48","Ebrei ed Epistole Generali 2/2: 1-2-3 Giovanni, Giuda","libri","epistole generali","general epistles",[],[61,62,63,64]],
+ ["M49","Apocalisse","libri","Apocalisse","Revelation",[],[65]],
+ ["M50","Profili Biblici","versetti","personaggi biblici","Bible characters",[]]
+]],
+["Studio e storia",[
+ ["M51","Archeologia Biblica","testo","archeologia biblica","biblical archaeology",[]],
+ ["M52","Esegesi dell'Antico Testamento","testo","esegesi","Old Testament exegesis",[]],
+ ["M53","Esegesi del Nuovo Testamento","testo","esegesi","New Testament exegesis",[]],
+ ["M54","Storia del Cristianesimo 1/3: dalla chiesa primitiva al Medioevo","testo","storia della chiesa","early church history",[SCHAFF(1,'Cristianesimo apostolico, 1-100 d.C.'),SCHAFF(2,'Cristianesimo antico, 100-325 d.C.')]],
+ ["M55","Storia del Cristianesimo 2/3: dalla Riforma ai risvegli","testo","Riforma protestante","Protestant Reformation revivals",[SCHAFF(7,'La Riforma tedesca')]],
+ ["M56","Storia del Cristianesimo 3/3: pentecostalismo e chiesa di oggi","testo","pentecostalismo","Pentecostal history Azusa",[AG]]
+]],
+["Ministero",[
+ ["M57","Evangelismo","testo","evangelizzazione","evangelism",[]],
+ ["M58","Missiologia","testo","missioni","missiology",[]],
+ ["M59","Omiletica","testo","predicazione","homiletics preaching",[]],
+ ["M60","Didattica Cristiana","testo","insegnamento cristiano","Christian education",[]],
+ ["M61","Teologia Pastorale","testo","pastore","pastoral theology",[]],
+ ["M62","Amministrazione Ecclesiastica","testo","anziani diaconi","church administration",[]],
+ ["M63","Canto e Musica Sacra","testo","musica cristiana","worship music",[]]
+]],
+["Materie extra",[
+ ["M64","Confessioni Cristiane 1/2: divisioni, Chiesa cattolica","testo","cattolicesimo","Roman Catholicism",[]],
+ ["M65","Confessioni Cristiane 2/2: ortodossi, orientali, anglicani","testo","chiesa ortodossa","Eastern Orthodoxy",[]],
+ ["M66","Denominazioni Evangeliche 1/2","testo","denominazioni","Protestant denominations",[]],
+ ["M67","Denominazioni Evangeliche 2/2","testo","pentecostali","Pentecostal denominations",[AG]],
+ ["M68","Religioni non Cristiane","testo","religioni","world religions",[]],
+ ["M69","Gruppi e Sette","testo","sette","cults",[]]
+]]
+];
+const CL=[];CORSO.forEach(([s,arr])=>arr.forEach(m=>CL.push(m)));
+const g=(q)=>'https://www.google.com/search?q='+encodeURIComponent(q);
+function corsoLinks(m){
+  const [num,tit,tipo,it,en,dir,books]=m, L=[...(dir||[])];
+  (books||[]).forEach(i=>{const b=B[i],s=sl(b);
+    L.push([b[0]+' – Constable','Introduzione al libro: autore, data, struttura, temi',`https://www.studylight.org/commentaries/eng/dcc/${s}-1.html`]);
+    L.push([b[0]+' – Matthew Henry','Introduzione e commento al capitolo 1',`https://www.studylight.org/commentaries/eng/mhm/${s}-1.html`]);});
+  const R=[
+    ['Cerca su GotQuestions (italiano)','Articoli evangelici brevi su «'+it+'»',g('site:gotquestions.org/Italiano '+it)],
+    ['Cerca su Bible.org','Studi evangelici in inglese su «'+en+'»',g('site:bible.org '+en)],
+    ['Cerca su ag.org (pentecostale)','Assemblee di Dio: «'+en+'»',g('site:ag.org '+en)],
+    ['Cerca PDF su Theology on the Web','Libri e articoli gratuiti su «'+en+'»',g('site:biblicalstudies.org.uk '+en)]];
+  return [L,R];
+}
+
+let cm=null;
+let mode='c', scr='home';
+function apri(x){cm=null;scr=x;st={b:null,c:null,v:null};try{history.replaceState(null,'',x==='p'?'#p':'#c');}catch(e){}render();}
+function home(){cm=null;scr='home';st={b:null,c:null,v:null};try{history.replaceState(null,'',location.pathname);}catch(e){}render();}
+const ABBR={gn:0,gen:0,es:1,eso:1,lv:2,lev:2,nm:3,nu:3,num:3,dt:4,deu:4,gs:5,gdc:6,gd:64,giud:6,rt:7,sl:18,sal:18,pr:19,prov:19,ec:20,ecc:20,qo:20,ct:21,cant:21,is:22,ger:23,gr:23,lam:24,la:24,ez:25,dn:26,da:26,os:27,gl:28,am:29,abd:30,ab:34,gna:31,mi:32,na:33,sof:35,ag:36,zc:37,zac:37,ml:38,mal:38,
+ mt:39,mat:39,mc:40,mr:40,lc:41,lu:41,gv:42,giov:42,at:43,rm:44,ro:44,gal:47,ef:48,fil:49,fl:49,col:50,tt:55,tit:55,flm:56,eb:57,gc:58,giac:58,ap:65,apoc:65,gb:17,giob:17,ne:15,neh:15,est:16,esd:14,
+ '1sam':8,'1sa':8,'1s':8,'2sam':9,'2sa':9,'2s':9,'1re':10,'1r':10,'2re':11,'2r':11,'1cr':12,'1cro':12,'2cr':13,'2cro':13,'1co':45,'1cor':45,'2co':46,'2cor':46,'1ts':51,'1tes':51,'2ts':52,'2tes':52,'1tm':53,'1tim':53,'2tm':54,'2tim':54,'1pt':59,'1pi':59,'1pie':59,'2pt':60,'2pi':60,'2pie':60,'1gv':61,'1gio':61,'2gv':62,'2gio':62,'3gv':63,'3gio':63};
+const norm=x=>x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+function trovaLibro(t){const k=norm(t);if(!k)return -1;if(k in ABBR)return ABBR[k];
+  const i=B.findIndex(b=>norm(b[0])===k);if(i>=0)return i;return B.findIndex(b=>norm(b[0]).startsWith(k));}
+function cerca(tipo='text'){const v=document.getElementById('ref').value.trim(),e=document.getElementById('err');
+  const m=v.match(/^\s*([1-3]?\s*[^\d\s:.,][^\d:.,]*?)\s*(\d+)\s*(?:[:.,]\s*(\d+))?\s*$/);
+  const fail=t=>{e.textContent=t;e.hidden=false;};
+  if(!m)return fail('Scrivi il riferimento così: Gen 1:1, Gv 3:16, 1 Co 13:4');
+  const i=trovaLibro(m[1]);if(i<0)return fail('Non trovo il libro «'+m[1].trim()+'». Prova con il nome intero, es. Genesi 1:1');
+  const c=+m[2],vv=m[3]?+m[3]:null,ch=B[i][3];
+  if(c<1||c>ch.length)return fail(B[i][0]+' ha '+ch.length+' capitoli.');
+  if(vv!==null&&(vv<1||vv>ch[c-1]))return fail(B[i][0]+' '+c+' ha '+ch[c-1]+' versetti.');
+  if(vv===null)return fail('Scrivi anche il versetto, es. '+B[i][0]+' '+c+':1');
+  location.href=`https://biblehub.com/${tipo}/${B[i][1]}/${c}-${vv}.htm`;}
 const view=document.getElementById('view'), crumbs=document.getElementById('crumbs');
 let st={b:null,c:null,v:null};
 
@@ -171,10 +349,16 @@ function links(b,c,v){
 
 function crumb(){
   const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
-  document.querySelector('.bar').hidden=(st.b===null);
+  document.querySelector('.bar').hidden=(cm===null&&scr==='home');
+  if(cm===null&&scr!=='home'&&st.b===null){crumbs.innerHTML=`<button class="back" onclick="home()" aria-label="Indietro">${ic}Indietro</button><div class="bar-title">${scr==='p'?'Studio del versetto':'Commentari'}</div>`;return;}
   let t='', back='';
+  if(cm!==null){document.querySelector('.bar').hidden=false;
+    t=cm<0?'Corso biblico':CL[cm][0]+' · '+CL[cm][1];
+    back=`<button class="back" onclick="${cm<0?'go(null)':'goM(-1)'}" aria-label="Indietro">${ic}Indietro</button>`;
+    crumbs.innerHTML=back+`<div class="bar-title">${t}</div>`;return;}
   if(st.b!==null){
     t=B[st.b][0]+(st.c!==null?' '+st.c:'')+(st.v!==null?':'+st.v:'');
+    if(st.v!==null&&mode==='p')t+=' · Parole';
     const prev=st.v!==null?`go(${st.b},${st.c})`:st.c!==null?`go(${st.b})`:'go(null)';
     back=`<button class="back" id="back" onclick="${prev}" aria-label="Indietro">${ic}Indietro</button>`;
   }
@@ -183,6 +367,34 @@ function crumb(){
 
 function render(){
   crumb();
+  if(cm===null&&scr==='home'){
+    view.innerHTML=`<div class="scelte">
+      <button class="scelta" onclick="apri('c')"><strong>Commentari</strong><small>Scegli libro, capitolo e versetto e apri i commentari</small><span class="go">›</span></button>
+      <button class="scelta" onclick="apri('p')"><strong>Studio del versetto</strong><small>Parole in ebraico e greco con il significato, e versetti correlati</small><span class="go">›</span></button></div>`;
+    window.scrollTo(0,0);return;}
+  if(cm===null&&scr==='p'){
+    view.innerHTML=`<h2 class="ref">Studio del versetto</h2>
+      <form class="cerca" onsubmit="event.preventDefault();cerca('text')">
+        <input id="ref" type="text" placeholder="es. Gen 1:1" autocomplete="off" autocapitalize="off" enterkeyhint="go"></form>
+      <p id="err" class="err" hidden></p>
+      <div class="azioni">
+        <button class="az" onclick="cerca('text')"><strong>Parole e significato</strong><small>Ogni parola in ebraico o greco, con pronuncia, traduzione e significato</small></button>
+        <button class="az" onclick="cerca('crossref')"><strong>Versetti correlati</strong><small>I passi della Bibbia collegati a questo versetto</small></button>
+      </div>
+      <p class="note">Scrivi il versetto, poi scegli cosa aprire. Si apre Bible Hub su quel versetto. Puoi scrivere abbreviazioni (Gen 1:1, Gv 3:16, 1 Co 13:4) o il nome intero.</p>`;
+    window.scrollTo(0,0);return;}
+  if(cm!==null){
+    if(cm<0){
+      view.innerHTML=CORSO.map(([sez,arr])=>`<div class="label">${sez}</div><div class="links">`+arr.map(m=>{const i=CL.indexOf(m);
+        return `<button class="link mat" onclick="goM(${i})"><div><strong>${m[0]} · ${m[1]}</strong><small>${m[2]}</small></div><span class="go">›</span></button>`}).join('')+'</div>').join('');
+    }else{
+      const m=CL[cm],[L,R]=corsoLinks(m),a=l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`;
+      view.innerHTML=`<h2 class="ref">${m[1]}</h2>`+(L.length?`<div class="label">Letture</div><div class="links">${L.map(a).join('')}</div>`:'')+
+        `<div class="label">Cerca su siti evangelici</div><div class="links">${R.map(a).join('')}</div>
+        <p class="note">Le ricerche si aprono su Google, limitate a quel sito. GotQuestions è in italiano, gli altri in inglese: per tradurre usa aA › Traduci in Safari.</p>`;
+    }
+    window.scrollTo(0,0);return;
+  }
   if(st.b===null){
     const btn=(i)=>`<button class="btn" onclick="go(${i})">${B[i][0]}</button>`;
     view.innerHTML=SEZ.map(([t,gr])=>`<h2 class="testamento">${t}</h2>`+gr.map(([n,a,z])=>
@@ -195,19 +407,27 @@ function render(){
     view.innerHTML=`<div class="label">Versetto</div><div class="grid">${Array.from({length:n},(_,i)=>`<button class="btn" onclick="go(${st.b},${st.c},${i+1})">${i+1}</button>`).join('')}</div>`;
   }else{
     const b=B[st.b];
+    if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,lg=AT?'ebraico':'greco',P=[
+      ['Interlineare','Testo '+lg+' parola per parola, con traduzione inglese sotto ogni parola',`https://biblehub.com/interlinear/${bh}/${st.c}-${st.v}.htm`],
+      ['Analisi delle parole','Ogni parola '+(AT?'ebraica':'greca')+' con numero Strong, forma grammaticale e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
+      ['Lessico','Elenco delle parole del versetto con il significato del vocabolario',`https://biblehub.com/lexicon/${bh}/${st.c}-${st.v}.htm`]];
+      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><p class="eyebrow-p">Parole in ${lg}</p><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
+      <p class="note">Si apre Bible Hub direttamente su questo versetto. Per tornare qui usa la freccia indietro.</p>`;window.scrollTo(0,0);return;}
     view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${links(b,st.c,st.v).map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
       <p class="note">I commentari sono in inglese e si aprono sul capitolo: scorri fino al versetto ${st.v}. Per tornare qui usa la freccia indietro.</p>`;
   }
   window.scrollTo(0,0);
 }
-function go(b=null,c=null,v=null){st={b,c,v};
-  try{history.replaceState(null,'',b===null?location.pathname:'#'+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
+function goM(i){cm=i;try{history.replaceState(null,'',i<0?'#m':'#m'+i);}catch(e){}render();}
+function go(b=null,c=null,v=null){cm=null;scr='c';st={b,c,v};
+  try{history.replaceState(null,'',b===null?'#c':'#'+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
   render();}
 (function(){let nav='navigate';try{nav=performance.getEntriesByType('navigation')[0].type;}catch(e){}
-  if(nav!=='back_forward'){try{history.replaceState(null,'',location.pathname);}catch(e){}st={b:null,c:null,v:null};render();return;}
+  if(nav!=='back_forward'){try{history.replaceState(null,'',location.pathname);}catch(e){}scr='home';st={b:null,c:null,v:null};render();return;}
+  const hh=(location.hash||'').slice(1); if(hh==='p'||hh==='c'){scr=hh;render();return;} if(hh&&/^\d/.test(hh))scr='c'; if(hh[0]==='m'){const n=parseInt(hh.slice(1));cm=isNaN(n)||!CL[n]?-1:n;render();return;}
   const p=(location.hash||'').slice(1).split('-').map(Number).filter(n=>!isNaN(n));
   st={b:p[0]??null,c:p[1]??null,v:p[2]??null};
-  if(st.b!==null&&!B[st.b])st={b:null,c:null,v:null};render();})();
+  if(st.b!==null&&!B[st.b]){st={b:null,c:null,v:null};scr='home';}render();})();
 </script>
 
 </body>
