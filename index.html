@@ -303,7 +303,7 @@ function corsoLinks(m){
 
 let cm=null;
 let mode='c', scr='home';
-function apri(x){cm=null;scr=x;st={b:null,c:null,v:null};try{history.replaceState(null,'',x==='p'?'#p':'#c');}catch(e){}render();}
+function apri(x){cm=null;mode=x;scr='c';st={b:null,c:null,v:null};try{history.replaceState(null,'',x==='p'?'#p':'#c');}catch(e){}render();}
 function home(){cm=null;scr='home';st={b:null,c:null,v:null};try{history.replaceState(null,'',location.pathname);}catch(e){}render();}
 const ABBR={gn:0,gen:0,es:1,eso:1,lv:2,lev:2,nm:3,nu:3,num:3,dt:4,deu:4,gs:5,gdc:6,gd:64,giud:6,rt:7,sl:18,sal:18,pr:19,prov:19,ec:20,ecc:20,qo:20,ct:21,cant:21,is:22,ger:23,gr:23,lam:24,la:24,ez:25,dn:26,da:26,os:27,gl:28,am:29,abd:30,ab:34,gna:31,mi:32,na:33,sof:35,ag:36,zc:37,zac:37,ml:38,mal:38,
  mt:39,mat:39,mc:40,mr:40,lc:41,lu:41,gv:42,giov:42,at:43,rm:44,ro:44,gal:47,ef:48,fil:49,fl:49,col:50,tt:55,tit:55,flm:56,eb:57,gc:58,giac:58,ap:65,apoc:65,gb:17,giob:17,ne:15,neh:15,est:16,esd:14,
@@ -350,7 +350,7 @@ function links(b,c,v){
 function crumb(){
   const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
   document.querySelector('.bar').hidden=(cm===null&&scr==='home');
-  if(cm===null&&scr!=='home'&&st.b===null){crumbs.innerHTML=`<button class="back" onclick="home()" aria-label="Indietro">${ic}Indietro</button><div class="bar-title">${scr==='p'?'Studio del versetto':'Commentari'}</div>`;return;}
+  if(cm===null&&scr!=='home'&&st.b===null){crumbs.innerHTML=`<button class="back" onclick="home()" aria-label="Indietro">${ic}Indietro</button><div class="bar-title">${mode==='p'?'Studio del versetto':'Commentari'}</div>`;return;}
   let t='', back='';
   if(cm!==null){document.querySelector('.bar').hidden=false;
     t=cm<0?'Corso biblico':CL[cm][0]+' · '+CL[cm][1];
@@ -358,7 +358,7 @@ function crumb(){
     crumbs.innerHTML=back+`<div class="bar-title">${t}</div>`;return;}
   if(st.b!==null){
     t=B[st.b][0]+(st.c!==null?' '+st.c:'')+(st.v!==null?':'+st.v:'');
-    if(st.v!==null&&mode==='p')t+=' · Parole';
+    if(mode==='p')t+=' · Studio';
     const prev=st.v!==null?`go(${st.b},${st.c})`:st.c!==null?`go(${st.b})`:'go(null)';
     back=`<button class="back" id="back" onclick="${prev}" aria-label="Indietro">${ic}Indietro</button>`;
   }
@@ -407,12 +407,11 @@ function render(){
     view.innerHTML=`<div class="label">Versetto</div><div class="grid">${Array.from({length:n},(_,i)=>`<button class="btn" onclick="go(${st.b},${st.c},${i+1})">${i+1}</button>`).join('')}</div>`;
   }else{
     const b=B[st.b];
-    if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,lg=AT?'ebraico':'greco',P=[
-      ['Interlineare','Testo '+lg+' parola per parola, con traduzione inglese sotto ogni parola',`https://biblehub.com/interlinear/${bh}/${st.c}-${st.v}.htm`],
-      ['Analisi delle parole','Ogni parola '+(AT?'ebraica':'greca')+' con numero Strong, forma grammaticale e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
-      ['Lessico','Elenco delle parole del versetto con il significato del vocabolario',`https://biblehub.com/lexicon/${bh}/${st.c}-${st.v}.htm`]];
-      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><p class="eyebrow-p">Parole in ${lg}</p><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
-      <p class="note">Si apre Bible Hub direttamente su questo versetto. Per tornare qui usa la freccia indietro.</p>`;window.scrollTo(0,0);return;}
+    if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,P=[
+      ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
+      ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`]];
+      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
+      <p class="note">Si apre Bible Hub su questo versetto. Per tornare qui usa la freccia indietro.</p>`;window.scrollTo(0,0);return;}
     view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${links(b,st.c,st.v).map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
       <p class="note">I commentari sono in inglese e si aprono sul capitolo: scorri fino al versetto ${st.v}. Per tornare qui usa la freccia indietro.</p>`;
   }
@@ -420,12 +419,12 @@ function render(){
 }
 function goM(i){cm=i;try{history.replaceState(null,'',i<0?'#m':'#m'+i);}catch(e){}render();}
 function go(b=null,c=null,v=null){cm=null;scr='c';st={b,c,v};
-  try{history.replaceState(null,'',b===null?'#c':'#'+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
+  try{history.replaceState(null,'',b===null?'#'+mode:'#'+(mode==='p'?'p':'')+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
   render();}
 (function(){let nav='navigate';try{nav=performance.getEntriesByType('navigation')[0].type;}catch(e){}
   if(nav!=='back_forward'){try{history.replaceState(null,'',location.pathname);}catch(e){}scr='home';st={b:null,c:null,v:null};render();return;}
-  const hh=(location.hash||'').slice(1); if(hh==='p'||hh==='c'){scr=hh;render();return;} if(hh&&/^\d/.test(hh))scr='c'; if(hh[0]==='m'){const n=parseInt(hh.slice(1));cm=isNaN(n)||!CL[n]?-1:n;render();return;}
-  const p=(location.hash||'').slice(1).split('-').map(Number).filter(n=>!isNaN(n));
+  const hh=(location.hash||'').slice(1); if(hh==='p'||hh==='c'){mode=hh;scr='c';render();return;} let h2=hh; if(/^p\d/.test(hh)){mode='p';h2=hh.slice(1);} if(/^\d/.test(h2))scr='c'; if(hh[0]==='m'){const n=parseInt(hh.slice(1));cm=isNaN(n)||!CL[n]?-1:n;render();return;}
+  const p=h2.split('-').map(Number).filter(n=>!isNaN(n));
   st={b:p[0]??null,c:p[1]??null,v:p[2]??null};
   if(st.b!==null&&!B[st.b]){st={b:null,c:null,v:null};scr='home';}render();})();
 </script>
