@@ -78,6 +78,9 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .az{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--accent);color:#fff;border:0;border-radius:14px;padding:16px 18px;cursor:pointer;font:inherit}
 .az strong{font-size:1.08rem;font-weight:800}.az small{opacity:.88;font-size:.86rem}
 .az + .az{background:var(--surface);color:var(--fg);border:1px solid var(--line)}.az + .az small{color:var(--muted);opacity:1}
+.bar-title{flex:1}
+.homeb{margin-left:auto;padding:10px 14px 10px 12px;gap:6px}
+.homeb svg{width:18px;height:18px}
 h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 .note{color:var(--muted);font-size:.85rem;margin-top:16px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -350,19 +353,19 @@ function links(b,c,v){
 function crumb(){
   const ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
   document.querySelector('.bar').hidden=(cm===null&&scr==='home');
-  if(cm===null&&scr!=='home'&&st.b===null){crumbs.innerHTML=`<button class="back" onclick="home()" aria-label="Indietro">${ic}Indietro</button><div class="bar-title">${mode==='p'?'Studio del versetto':'Commentari'}</div>`;return;}
+  if(cm===null&&scr!=='home'&&st.b===null){crumbs.innerHTML=`<button class="back" onclick="home()" aria-label="Indietro">${ic}Indietro</button><div class="bar-title">${mode==='p'?'Studio del versetto':'Commentari'}</div><button class="back homeb" onclick="home()" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>`;return;}
   let t='', back='';
   if(cm!==null){document.querySelector('.bar').hidden=false;
     t=cm<0?'Corso biblico':CL[cm][0]+' · '+CL[cm][1];
     back=`<button class="back" onclick="${cm<0?'go(null)':'goM(-1)'}" aria-label="Indietro">${ic}Indietro</button>`;
-    crumbs.innerHTML=back+`<div class="bar-title">${t}</div>`;return;}
+    crumbs.innerHTML=back+`<div class="bar-title">${t}</div><button class="back homeb" onclick="home()" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>`;return;}
   if(st.b!==null){
     t=B[st.b][0]+(st.c!==null?' '+st.c:'')+(st.v!==null?':'+st.v:'');
     if(mode==='p')t+=' · Studio';
     const prev=st.v!==null?`go(${st.b},${st.c})`:st.c!==null?`go(${st.b})`:'go(null)';
     back=`<button class="back" id="back" onclick="${prev}" aria-label="Indietro">${ic}Indietro</button>`;
   }
-  crumbs.innerHTML=back+`<div class="bar-title">${t}</div>`;
+  crumbs.innerHTML=back+`<div class="bar-title">${t}</div><button class="back homeb" onclick="home()" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>`;
 }
 
 function render(){
