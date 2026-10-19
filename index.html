@@ -197,7 +197,9 @@ function render(){
 function go(b=null,c=null,v=null){st={b,c,v};
   try{history.replaceState(null,'',b===null?location.pathname:'#'+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
   render();}
-(function(){const p=(location.hash||'').slice(1).split('-').map(Number).filter(n=>!isNaN(n));
+(function(){let nav='navigate';try{nav=performance.getEntriesByType('navigation')[0].type;}catch(e){}
+  if(nav!=='back_forward'){try{history.replaceState(null,'',location.pathname);}catch(e){}st={b:null,c:null,v:null};render();return;}
+  const p=(location.hash||'').slice(1).split('-').map(Number).filter(n=>!isNaN(n));
   st={b:p[0]??null,c:p[1]??null,v:p[2]??null};
   if(st.b!==null&&!B[st.b])st={b:null,c:null,v:null};render();})();
 </script>
