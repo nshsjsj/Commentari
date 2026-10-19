@@ -35,7 +35,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .back svg{width:20px;height:20px}
 .back:hover,.back:focus-visible{background:rgba(255,255,255,.22);outline:none}
 .bar-title{font-weight:800;font-size:1.05rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wrap{max-width:760px;margin:0 auto;padding-block:16px 48px;
+.wrap{max-width:760px;margin:0 auto;padding-block:16px 110px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h2.testamento{font-size:1.9rem;font-weight:800;margin:22px 0 6px;letter-spacing:-.02em}
 h2.testamento:not(:first-child){margin-top:64px;padding-top:28px;border-top:1px solid var(--line)}
@@ -189,13 +189,17 @@ function render(){
     view.innerHTML=`<div class="label">Versetto</div><div class="grid">${Array.from({length:n},(_,i)=>`<button class="btn" onclick="go(${st.b},${st.c},${i+1})">${i+1}</button>`).join('')}</div>`;
   }else{
     const b=B[st.b];
-    view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${links(b,st.c,st.v).map(l=>`<a class="link" href="${l[2]}" target="_blank" rel="noopener"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
-      <p class="note">I commentari sono in inglese. Matthew Henry, JFB e Guzik si aprono sul capitolo: scorri fino al versetto ${st.v}. Bible Hub si apre direttamente sul versetto.</p>`;
+    view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${links(b,st.c,st.v).map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
+      <p class="note">I commentari sono in inglese e si aprono sul capitolo: scorri fino al versetto ${st.v}. Per tornare qui usa la freccia indietro.</p>`;
   }
   window.scrollTo(0,0);
 }
-function go(b=null,c=null,v=null){st={b,c,v};render();}
-render();
+function go(b=null,c=null,v=null){st={b,c,v};
+  try{history.replaceState(null,'',b===null?location.pathname:'#'+[b,c,v].filter(x=>x!==null).join('-'));}catch(e){}
+  render();}
+(function(){const p=(location.hash||'').slice(1).split('-').map(Number).filter(n=>!isNaN(n));
+  st={b:p[0]??null,c:p[1]??null,v:p[2]??null};
+  if(st.b!==null&&!B[st.b])st={b:null,c:null,v:null};render();})();
 </script>
 
 </body>
