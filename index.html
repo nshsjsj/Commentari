@@ -479,7 +479,7 @@ document.addEventListener('selectionchange',()=>{if(document.getElementById('vie
 function vGpt(){if(!VIS)return;const t=selViewer()||VIS.copiato;if(!t)return;VIS.copiato=t;
   const msg='Traduci in italiano il testo seguente in modo fedele e completo, senza riassumere, aggiungere commenti o tralasciare nulla.\n\nRegole:\n- Traduci TUTTO, comprese le abbreviazioni dei libri biblici, che vanno convertite nelle abbreviazioni italiane standard (es. Gen→Gn, Exod→Es, Lev→Lv, Deut→Dt, Josh→Gs, Judg→Gdc, 1 Sam→1 Sam, Ps→Sal, Prov→Pr, Isa→Is, Jer→Ger, Ezek→Ez, Dan→Dn, Hos→Os, Zech→Zc, Mal→Ml, Matt→Mt, Mk→Mc, Lk→Lc, Jn→Gv, Acts→At, Rom→Rm, 1 Cor→1 Co, Gal→Gal, Eph→Ef, Phil→Fil, Col→Col, 1 Thess→1 Ts, 1 Tim→1 Tm, Heb→Eb, Jas→Gc, 1 Pet→1 Pt, Rev→Ap, ecc.).\n- Mantieni invariati i numeri di capitolo e versetto.\n- Traduci anche le altre abbreviazioni e sigle (es. cf.→cfr., e.g.→per es., i.e.→cioè, v./vv.→v./vv., NT→NT, OT→AT, LXX→LXX).\n- Le parole in ebraico o greco traslitterate lasciale come sono, in corsivo se possibile.\n- I nomi propri vanno resi nella forma italiana usata nelle Bibbie evangeliche (es. Isaiah→Isaia, Zechariah→Zaccaria).\n\nTesto:\n\n'+VIS.copiato;
   try{navigator.clipboard.writeText(msg).catch(()=>{});}catch(e){}
-  let url='https://chatgpt.com/?q='+encodeURIComponent(msg);if(url.length>7500)url='https://chatgpt.com/';
+  let url='https://chatgpt.com/?temporary-chat=true&q='+encodeURIComponent(msg);if(url.length>7500)url='https://chatgpt.com/?temporary-chat=true';
   window.open(url,'_blank');}
 function vTesto(){if(!VIS)return;VIS.testo=!VIS.testo;document.getElementById('vcanvas').hidden=VIS.testo;document.getElementById('vtext').hidden=!VIS.testo;
   document.getElementById('vtbtn').textContent=VIS.testo?'Pagina':'Testo';disegna();}
