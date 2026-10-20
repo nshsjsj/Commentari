@@ -114,9 +114,9 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .gpt{height:40px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0d0d0d;border:1px solid #fff;border-radius:999px;padding:10px 16px;font:600 15px var(--font);cursor:pointer;transition:transform .15s,background .15s}
 .gpt:hover:not(:disabled){transform:scale(1.04)}
 .gpt:disabled{background:#1f1f1f;color:#6f6f6f;border-color:#333;cursor:not-allowed}
-.vpage{position:relative;margin:0 auto 12px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.35)}.vpage canvas{display:block}
-.textLayer{-webkit-user-select:text;user-select:text;position:absolute;left:0;top:0;overflow:hidden;opacity:1;line-height:1;text-align:initial;-webkit-text-size-adjust:none;text-size-adjust:none;transform-origin:0 0;z-index:2}
-.textLayer span,.textLayer br{color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
+.vpage{-webkit-user-select:none;user-select:none;position:relative;margin:0 auto 12px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.35)}.vpage canvas{display:block}
+.textLayer{-webkit-user-select:none;user-select:none;position:absolute;left:0;top:0;overflow:hidden;opacity:1;line-height:1;text-align:initial;-webkit-text-size-adjust:none;text-size-adjust:none;transform-origin:0 0;z-index:2}
+.textLayer span,.textLayer br{-webkit-user-select:text;user-select:text;color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
 .textLayer ::selection{background:rgba(0,90,255,.3);color:transparent}
 .textLayer .endOfContent{display:block;position:absolute;left:0;right:0;top:100%;bottom:0;z-index:-1;cursor:default;-webkit-user-select:none;user-select:none}
 .textLayer .endOfContent.active{top:0}
@@ -450,10 +450,10 @@ function gptStato(){const b=document.getElementById('gptbtn');if(!b)return;const
   b.title=t?'Traduci il testo selezionato':'Seleziona un testo nel PDF per attivarlo';}
 (function(){const on=()=>{const e=document.querySelectorAll('#vbox .endOfContent');e.forEach(x=>x.classList.add('active'));},off=()=>{document.querySelectorAll('#vbox .endOfContent').forEach(x=>x.classList.remove('active'));};
   document.addEventListener('mousedown',ev=>{if(ev.target.closest&&ev.target.closest('#vbox .textLayer'))on();});document.addEventListener('mouseup',off);
-  document.addEventListener('touchstart',ev=>{if(ev.target.closest&&ev.target.closest('#vbox .textLayer'))on();},{passive:true});document.addEventListener('touchend',off);})();
+})();
 document.addEventListener('DOMContentLoaded',()=>{});
 setTimeout(()=>{const b=document.getElementById('vbox');if(b)b.addEventListener('scroll',()=>{altrePagine();},{passive:true});},0);
-document.addEventListener('selectionchange',()=>{if(!document.getElementById('viewer').hidden)gptStato();});
+document.addEventListener('selectionchange',()=>{if(document.getElementById('viewer').hidden)return;gptStato();const se=window.getSelection(),on=!!(se&&!se.isCollapsed&&document.getElementById('vbox').contains(se.anchorNode));document.querySelectorAll('#vbox .endOfContent').forEach(x=>x.classList.toggle('active',on));});
 function vGpt(){if(!VIS)return;const t=selViewer()||VIS.copiato;if(!t)return;VIS.copiato=t;
   const msg='Traduci in italiano il testo seguente in modo fedele, senza alterare, riassumere o aggiungere nulla. Mantieni i riferimenti biblici così come sono.\n\n'+VIS.copiato;
   try{navigator.clipboard.writeText(msg).catch(()=>{});}catch(e){}
