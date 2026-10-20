@@ -402,7 +402,8 @@ function db(){return DB||(DB=new Promise((ok,ko)=>{try{const r=indexedDB.open('m
 async function dbGet(k){const d=await db();return new Promise((ok,ko)=>{const r=d.transaction('f').objectStore('f').get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);});}
 async function dbPut(k,v){const d=await db();return new Promise((ok,ko)=>{const t=d.transaction('f','readwrite');t.objectStore('f').put(v,k);t.oncomplete=ok;t.onerror=()=>ko(t.error);});}
 async function dbDel(k){const d=await db();return new Promise((ok)=>{const t=d.transaction('f','readwrite');t.objectStore('f').delete(k);t.oncomplete=ok;});}
-async function aggiornaPres(){for(const m of MIEI){try{const v=await dbGet(m[0]+':info');PRES[m[0]]=v||null;}catch(e){PRES[m[0]]=null;}}}
+let PRESOK=false;
+async function aggiornaPres(){for(const m of MIEI){try{const v=await dbGet(m[0]+':info');PRES[m[0]]=v||null;}catch(e){PRES[m[0]]=null;}}PRESOK=true;}
 let PDFJS=null;
 function caricaPdfjs(){return PDFJS||(PDFJS=new Promise((ok,ko)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';ok(pdfjsLib);};sc.onerror=()=>ko(new Error('rete'));document.head.appendChild(sc);}));}
@@ -598,7 +599,7 @@ function render(){
       <button class="scelta" onclick="apri('p')"><strong>Studio del versetto</strong><small>Parole in ebraico e greco con il significato, e versetti correlati</small><span class="go">›</span></button>
       <button class="scelta" onclick="apri('d')"><strong>Dizionario</strong><small>Cerca una parola, un nome o un luogo biblico in Unger e Zondervan</small><span class="go">›</span></button>
       ${segn().length?`<button class="scelta piccola" onclick="apri('s')"><strong>★ Segnalibri</strong><small>${segn().length} versett${segn().length===1?'o salvato':'i salvati'}</small><span class="go">›</span></button>`:''}
-      ${MIEI.every(m=>PRES[m[0]])?'':`<button class="scelta piccola" onclick="apri('f')"><strong>📄 I miei PDF</strong><small>Aggiungi i tuoi commentari in PDF: restano solo su questo dispositivo</small><span class="go">›</span></button>`}</div>
+      ${!PRESOK||MIEI.every(m=>PRES[m[0]])?'':`<button class="scelta piccola" onclick="apri('f')"><strong>📄 I miei PDF</strong><small>Aggiungi i tuoi commentari in PDF: restano solo su questo dispositivo</small><span class="go">›</span></button>`}</div>
 `;
     window.scrollTo(0,0);return;}
   if(cm===null&&scr==='p'){
