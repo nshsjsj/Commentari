@@ -580,7 +580,7 @@ function render(){
   crumb();
   if(cm===null&&scr==='d'){
     view.innerHTML=`<form class="cerca" style="margin-top:4px" onsubmit="event.preventDefault();suggDiz()"><input id="dzq" type="search" placeholder="Es. Melchisedec, tabernacolo, farisei…" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="suggDiz()"></form>
-      <div id="dzr" class="links" style="margin-top:12px"></div><p class="note">Scrivi anche solo l'iniziale: i risultati si affinano mentre scrivi. In grassetto la parola italiana, sotto la voce inglese del dizionario.</p>`;
+      <div id="dzr" class="links" style="margin-top:12px"></div>`;
     setTimeout(()=>{const i=document.getElementById('dzq');if(i)i.focus();},50);window.scrollTo(0,0);return;}
   if(cm===null&&scr==='s'){const a=segn();
     if(!RIV&&a.length)caricaRiv().then(d=>{if(d&&scr==='s')render();});
@@ -590,8 +590,7 @@ function render(){
     view.innerHTML=`<p class="note" style="margin-top:4px">I PDF che aggiungi qui vengono salvati <strong>solo in questo browser, su questo dispositivo</strong>: non vanno su internet. Poi, quando apri un versetto nei Commentari, trovi il pulsante 📄 che apre il PDF già sulla pagina giusta.</p>
       <div class="links">${MIEI.map(m=>{const p=PRES[m[0]];return `<div class="link pdfslot"><div><strong>${m[1]}</strong><small>${m[2]}</small>
         <small id="st-${m[0]}" class="${p?'ok':''}">${p?'✓ Salvato: '+p.nome+' ('+p.mb+' MB)':'Non ancora aggiunto'}</small></div>
-        <div class="slotbtn"><label class="mini">${p?'Sostituisci':'Scegli PDF'}<input type="file" accept="application/pdf,.pdf" hidden onchange="salvaPdf('${m[0]}',this)"></label>${p?`<button class="mini no" onclick="togliPdf('${m[0]}')">Togli</button>`:''}</div></div>`}).join('')}</div>
-      <p class="note">Sull'iPhone aggiungili <strong>dall'icona della Home</strong>, non da Safari: sono due spazi separati. Ogni dispositivo va preparato una volta.</p>`;
+        <div class="slotbtn"><label class="mini">${p?'Sostituisci':'Scegli PDF'}<input type="file" accept="application/pdf,.pdf" hidden onchange="salvaPdf('${m[0]}',this)"></label>${p?`<button class="mini no" onclick="togliPdf('${m[0]}')">Togli</button>`:''}</div></div>`}).join('')}</div>`;
     window.scrollTo(0,0);return;}
   if(cm===null&&scr==='home'){
     view.innerHTML=`<div class="scelte">
@@ -640,8 +639,7 @@ function render(){
     if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,P=[
       ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
       ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`]];
-      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>
-      <p class="note">Si apre Bible Hub su questo versetto. Per tornare qui usa la freccia indietro.</p>`;window.scrollTo(0,0);return;}
+      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>`;window.scrollTo(0,0);return;}
     const ii=B.indexOf(b),on=links(b,st.c,st.v),O=n=>on.find(l=>l[0].startsWith(n)),P=k=>{const m=MIEI.find(x=>x[0]===k);if(!m||!PRES[k])return null;const pg=pagina(k,ii,st.c,st.v);return pg?['📄 '+m[1],'PDF dal tuo dispositivo, pagina '+pg,null,k,pg]:null;};
     const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('moody'),P('mac'),P('macnt'),O('Albert Barnes')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
     const sg=haSegn(st.b,st.c,st.v),tv=RIV?testoV(st.b,st.c,st.v):'';
