@@ -98,7 +98,15 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .vzoom{display:flex;align-items:center;gap:4px}
 .vpg input::-webkit-outer-spin-button,.vpg input::-webkit-inner-spin-button,.vzoom input::-webkit-outer-spin-button,.vzoom input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.vpg input,.vzoom input{-moz-appearance:textfield;appearance:textfield}.vzoom input{width:56px}
 #vinfo{grid-column:1/-1;font-size:.9rem}
-@media (max-width:760px){.vbar{grid-template-columns:1fr 1fr}.vc{grid-column:1/-1;order:3}.vr{grid-column:2}}
+@media (max-width:760px){
+  .vbar{grid-template-columns:auto 1fr;gap:6px 8px;padding-bottom:6px}
+  .vl{grid-column:1;grid-row:1}.vc{grid-column:2;grid-row:1;justify-content:flex-end}
+  .vr{grid-column:1/-1;grid-row:2;justify-content:space-between;flex-wrap:nowrap;margin-right:0!important}
+  .vbar .back{height:34px;padding:0 11px;font-size:14px}
+  .vpg{font-size:14px;gap:4px}.vpg .lbl{display:none}
+  .vpg input,.vzoom input{height:30px;width:48px;font-size:14px}.vzoom input{width:44px}
+  .gpt{height:34px;padding:0 12px;font-size:14px}
+}
 .vbar .vclose:hover{background:#e5484d!important;transform:scale(1.06)}
 .vbar .vhome:hover,.homeb:hover{background:#6b7280!important;color:#fff!important;transform:scale(1.06)}
 #crumbs .back:not(.homeb):hover{background:#fff!important;color:var(--accent)!important;transform:scale(1.06)}
@@ -136,7 +144,7 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 <div id="viewer" hidden><div class="vbar">
   <div class="vl"><button class="back vclose" onclick="chiudiPdf()">✕ Chiudi</button><button class="back vhome" onclick="chiudiPdf();home()">Home</button></div>
   <div class="vc"><button class="back" onclick="vPag(-1)" aria-label="Pagina precedente">‹</button>
-    <label class="vpg">Pagina <input id="vpgin" type="text" inputmode="numeric" autocomplete="off" onchange="vVai(this.value)" onkeydown="if(event.key==='Enter')this.blur()"> di <span id="vtot">–</span></label>
+    <label class="vpg"><span class="lbl">Pagina</span> <input id="vpgin" type="text" inputmode="numeric" autocomplete="off" onchange="vVai(this.value)" onkeydown="if(event.key==='Enter')this.blur()"> di <span id="vtot">–</span></label>
     <button class="back" onclick="vPag(1)" aria-label="Pagina successiva">›</button></div>
   <div class="vr"><button class="gpt" id="gptbtn" onclick="vGpt()" disabled>Traduci con ChatGPT</button><span class="vzoom"><button class="back" onclick="vZoom(-10)" aria-label="Riduci">−</button><input id="vzin" type="text" value="100" inputmode="numeric" autocomplete="off" onchange="vZoomSet(this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span>%</span><button class="back" onclick="vZoom(10)" aria-label="Ingrandisci">+</button></span><span id="vtbtn" hidden></span></div>
   <span id="vinfo" hidden></span></div>
