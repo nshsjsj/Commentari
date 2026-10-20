@@ -579,15 +579,15 @@ function crumb(){
 function render(){
   crumb();
   if(cm===null&&scr==='d'){
-    view.innerHTML=`<h2 class="ref">Dizionario</h2><form class="cerca" onsubmit="event.preventDefault();suggDiz()"><input id="dzq" type="search" placeholder="Es. Melchisedec, tabernacolo, farisei…" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="suggDiz()"></form>
+    view.innerHTML=`<form class="cerca" style="margin-top:4px" onsubmit="event.preventDefault();suggDiz()"><input id="dzq" type="search" placeholder="Es. Melchisedec, tabernacolo, farisei…" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="suggDiz()"></form>
       <div id="dzr" class="links" style="margin-top:12px"></div><p class="note">Scrivi anche solo l'iniziale: i risultati si affinano mentre scrivi. In grassetto la parola italiana, sotto la voce inglese del dizionario.</p>`;
     setTimeout(()=>{const i=document.getElementById('dzq');if(i)i.focus();},50);window.scrollTo(0,0);return;}
   if(cm===null&&scr==='s'){const a=segn();
     if(!RIV&&a.length)caricaRiv().then(d=>{if(d&&scr==='s')render();});
-    view.innerHTML=`<h2 class="ref">Segnalibri</h2>`+(a.length?`<div class="links">${a.map((x,i)=>`<div class="link segn"><button class="sapri" onclick="mode='c';go(${x[0]},${x[1]},${x[2]})"><strong>${B[x[0]][0]} ${x[1]}:${x[2]}</strong><small>${RIV?testoV(x[0],x[1],x[2]).replace(/[<>&]/g,''):''}</small></button><button class="mini no" onclick="const a=segn();a.splice(${i},1);salvaSegn(a);render()">Togli</button></div>`).join('')}</div>`:`<p class="note">Nessun segnalibro. Apri un versetto e tocca ☆ per salvarlo.</p>`);
+    view.innerHTML=""+(a.length?`<div class="links">${a.map((x,i)=>`<div class="link segn"><button class="sapri" onclick="mode='c';go(${x[0]},${x[1]},${x[2]})"><strong>${B[x[0]][0]} ${x[1]}:${x[2]}</strong><small>${RIV?testoV(x[0],x[1],x[2]).replace(/[<>&]/g,''):''}</small></button><button class="mini no" onclick="const a=segn();a.splice(${i},1);salvaSegn(a);render()">Togli</button></div>`).join('')}</div>`:`<p class="note">Nessun segnalibro. Apri un versetto e tocca ☆ per salvarlo.</p>`);
     window.scrollTo(0,0);return;}
   if(cm===null&&scr==='f'){
-    view.innerHTML=`<h2 class="ref">I miei PDF</h2><p class="note" style="margin-top:0">I PDF che aggiungi qui vengono salvati <strong>solo in questo browser, su questo dispositivo</strong>: non vanno su internet. Poi, quando apri un versetto nei Commentari, trovi il pulsante 📄 che apre il PDF già sulla pagina giusta.</p>
+    view.innerHTML=`<p class="note" style="margin-top:4px">I PDF che aggiungi qui vengono salvati <strong>solo in questo browser, su questo dispositivo</strong>: non vanno su internet. Poi, quando apri un versetto nei Commentari, trovi il pulsante 📄 che apre il PDF già sulla pagina giusta.</p>
       <div class="links">${MIEI.map(m=>{const p=PRES[m[0]];return `<div class="link pdfslot"><div><strong>${m[1]}</strong><small>${m[2]}</small>
         <small id="st-${m[0]}" class="${p?'ok':''}">${p?'✓ Salvato: '+p.nome+' ('+p.mb+' MB)':'Non ancora aggiunto'}</small></div>
         <div class="slotbtn"><label class="mini">${p?'Sostituisci':'Scegli PDF'}<input type="file" accept="application/pdf,.pdf" hidden onchange="salvaPdf('${m[0]}',this)"></label>${p?`<button class="mini no" onclick="togliPdf('${m[0]}')">Togli</button>`:''}</div></div>`}).join('')}</div>
