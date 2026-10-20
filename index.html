@@ -106,7 +106,7 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .gpt{height:40px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0d0d0d;border:1px solid #fff;border-radius:999px;padding:10px 16px;font:600 15px var(--font);cursor:pointer;transition:transform .15s,background .15s}
 .gpt:hover:not(:disabled){transform:scale(1.04)}
 .gpt:disabled{background:#1f1f1f;color:#6f6f6f;border-color:#333;cursor:not-allowed}
-#vpage{position:relative;margin:8px auto;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.35)}#vpage canvas{display:block}
+.vpage{position:relative;margin:8px auto 16px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.35)}.vpage canvas{display:block}
 .textLayer{-webkit-user-select:text;user-select:text;position:absolute;left:0;top:0;overflow:hidden;opacity:1;line-height:1;text-align:initial;-webkit-text-size-adjust:none;text-size-adjust:none;transform-origin:0 0;z-index:2}
 .textLayer span,.textLayer br{color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0% 0%}
 .textLayer ::selection{background:rgba(0,90,255,.3);color:transparent}
@@ -140,7 +140,7 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
     <button class="back" onclick="vPag(1)" aria-label="Pagina successiva">›</button></div>
   <div class="vr"><button class="gpt" id="gptbtn" onclick="vGpt()" disabled>Traduci con ChatGPT</button><span class="vzoom"><button class="back" onclick="vZoom(-10)" aria-label="Riduci">−</button><input id="vzin" type="text" value="100" inputmode="numeric" autocomplete="off" onchange="vZoomSet(this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span>%</span><button class="back" onclick="vZoom(10)" aria-label="Ingrandisci">+</button></span><span id="vtbtn" hidden></span></div>
   <span id="vinfo" hidden></span></div>
-  <div id="vbox"><div id="vpage"><canvas id="vcanvas"></canvas><div id="vtl" class="textLayer"></div></div><div id="vtext" hidden></div></div></div>
+  <div id="vbox"></div></div>
 <header class="bar"><div class="bar-in" id="crumbs"></div></header>
 <div class="wrap">
   <main id="view"></main>
@@ -392,24 +392,39 @@ async function salvaPdf(k,input){const f=input.files&&input.files[0];if(!f)retur
 async function togliPdf(k){await dbDel(k);await dbDel(k+':info');await aggiornaPres();render();}
 let VIS=null;
 async function apriPdf(k,pagina){const ov=document.getElementById('viewer');ov.hidden=false;document.body.style.overflow='hidden';
-  const cv=document.getElementById('vcanvas'),info=document.getElementById('vinfo');info.textContent='Apro il PDF…';document.getElementById('vtot').textContent='…';cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+  const info=document.getElementById('vinfo');info.hidden=true;document.getElementById('vtot').textContent='…';document.getElementById('vbox').innerHTML='';
   try{const lib=await caricaPdfjs();const blob=await dbGet(k);if(!blob)throw new Error('manca');
     if(!VIS||VIS.k!==k){const doc=await lib.getDocument({data:await blob.arrayBuffer()}).promise;VIS={k,doc,p:1};}
-    VIS.testo=false;VIS.copiato='';document.getElementById('vinfo').hidden=true;gptStato();document.getElementById('vcanvas').hidden=false;document.getElementById('vtext').hidden=true;document.getElementById('vtext').innerHTML='';document.getElementById('vtbtn').textContent='Testo';
-    VIS.p=Math.min(Math.max(1,pagina),VIS.doc.numPages);await disegna();}
+    VIS.copiato='';VIS.fit=null;gptStato();
+    await disegna(Math.min(Math.max(1,pagina),VIS.doc.numPages));}
   catch(e){info.hidden=false;info.textContent=e.message==='rete'?'Serve internet per caricare il lettore PDF. Riprova quando sei connesso.':e.message==='manca'?'Non trovo il PDF su questo dispositivo: aggiungilo da «I miei PDF».':'Non riesco ad aprire il PDF ('+e.message+').';}}
-async function disegna(){const pg=await VIS.doc.getPage(VIS.p),cv=document.getElementById('vcanvas'),box=document.getElementById('vbox'),wrap=document.getElementById('vpage'),tl=document.getElementById('vtl');
-  const tc0=await pg.getTextContent(),hs=tc0.items.filter(it=>it.str&&it.str.trim().length>2).map(it=>Math.hypot(it.transform[2],it.transform[3])).filter(h=>h>4&&h<40).sort((a,b)=>a-b);
-  const fs=hs.length?hs[Math.floor(hs.length/2)]:10,base=pg.getViewport({scale:1}),fit=Math.min(1.51*9.5/fs,(box.clientWidth-16)/base.width),sc=fit*(VIS.z||1),w=base.width*sc,dpr=Math.min(window.devicePixelRatio||1,3),vp=pg.getViewport({scale:sc*dpr}),vc=pg.getViewport({scale:sc});
-  cv.width=vp.width;cv.height=vp.height;cv.style.width=vc.width+'px';cv.style.height=vc.height+'px';wrap.style.width=vc.width+'px';wrap.style.height=vc.height+'px';
+async function calcFit(n){const pg=await VIS.doc.getPage(n),tc=await pg.getTextContent(),box=document.getElementById('vbox');
+  const hs=tc.items.filter(it=>it.str&&it.str.trim().length>2).map(it=>Math.hypot(it.transform[2],it.transform[3])).filter(h=>h>4&&h<40).sort((a,b)=>a-b);
+  const fs=hs.length?hs[Math.floor(hs.length/2)]:10,base=pg.getViewport({scale:1});return Math.min(1.51*9.5/fs,(box.clientWidth-16)/base.width);}
+async function creaPagina(n){const pg=await VIS.doc.getPage(n),sc=VIS.fit*(VIS.z||1),dpr=Math.min(window.devicePixelRatio||1,3),vp=pg.getViewport({scale:sc*dpr}),vc=pg.getViewport({scale:sc});
+  const el=document.createElement('div');el.className='vpage';el.dataset.p=n;el.style.width=vc.width+'px';el.style.height=vc.height+'px';
+  const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;cv.style.width=vc.width+'px';cv.style.height=vc.height+'px';el.appendChild(cv);
+  const tl=document.createElement('div');tl.className='textLayer';el.appendChild(tl);
   await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
-  tl.innerHTML='';tl.style.width=vc.width+'px';tl.style.height=vc.height+'px';tl.style.setProperty('--scale-factor',sc);tl.style.setProperty('--total-scale-factor',sc);
-  try{const tc=tc0;
+  tl.style.setProperty('--scale-factor',sc);tl.style.setProperty('--total-scale-factor',sc);
+  try{const tc=await pg.getTextContent();
     if(pdfjsLib.TextLayer)await new pdfjsLib.TextLayer({textContentSource:tc,container:tl,viewport:vc}).render();
     else await pdfjsLib.renderTextLayer({textContentSource:tc,container:tl,viewport:vc,textDivs:[]}).promise;}catch(e){}
-  tl.style.width=vc.width+'px';tl.style.height=vc.height+'px';
-  if(!tl.querySelector('.endOfContent')){const eo=document.createElement('div');eo.className='endOfContent';tl.appendChild(eo);}
-  document.getElementById('vinfo').textContent='Pagina '+VIS.p+' di '+VIS.doc.numPages;aggPag();box.scrollTop=0;}
+  tl.style.width=vc.width+'px';tl.style.height=vc.height+'px';const eo=document.createElement('div');eo.className='endOfContent';tl.appendChild(eo);
+  return el;}
+let CARICO=false;
+async function disegna(t){if(!VIS)return;t=t||VIS.p;const box=document.getElementById('vbox'),N=VIS.doc.numPages;CARICO=true;
+  if(!VIS.fit)VIS.fit=await calcFit(t);
+  box.innerHTML='';const from=Math.max(1,t-1),to=Math.min(N,t+2);
+  for(let n=from;n<=to;n++)box.appendChild(await creaPagina(n));
+  VIS.first=from;VIS.last=to;VIS.p=t;const el=box.querySelector(`.vpage[data-p="${t}"]`);box.scrollTop=el?el.offsetTop-8:0;aggPag();CARICO=false;}
+async function altrePagine(){if(!VIS||CARICO)return;const box=document.getElementById('vbox'),N=VIS.doc.numPages;
+  if(box.scrollTop+box.clientHeight>box.scrollHeight-1200&&VIS.last<N){CARICO=true;VIS.last++;box.appendChild(await creaPagina(VIS.last));
+    while(box.children.length>10){const f=box.firstElementChild,h=f.offsetHeight+16;f.remove();VIS.first++;box.scrollTop-=h;}CARICO=false;}
+  else if(box.scrollTop<800&&VIS.first>1){CARICO=true;VIS.first--;const el=await creaPagina(VIS.first),h0=box.scrollHeight;box.insertBefore(el,box.firstElementChild);box.scrollTop+=box.scrollHeight-h0;
+    while(box.children.length>10){box.lastElementChild.remove();VIS.last--;}CARICO=false;}
+  const lim=box.scrollTop+box.clientHeight*0.3;let cur=VIS.first;for(const e of box.children){if(e.offsetTop<=lim)cur=+e.dataset.p;}
+  if(cur!==VIS.p){VIS.p=cur;aggPag();}}
 async function testoPagina(){const pg=await VIS.doc.getPage(VIS.p),tc=await pg.getTextContent();
   let t='';for(const it of tc.items){t+=it.str;t+=it.hasEOL?'\n':(it.str.endsWith(' ')?'':' ');}
   t=t.replace(/[ \t]+/g,' ').replace(/-\n(?=[a-z])/g,'').replace(/\s*\n\s*/g,' ').replace(/\s(\d{1,3}:\d{1,3}(?:-\d{1,3})?\.)\s/g,'\n\n$1 ').trim();
@@ -417,12 +432,14 @@ async function testoPagina(){const pg=await VIS.doc.getPage(VIS.p),tc=await pg.g
 async function mostraTesto(){const t=await testoPagina();
   const el=document.getElementById('vtext');el.innerHTML='<p class="vhint">Tieni premuto (o seleziona col mouse) una parte del testo e scegli <b>Traduci</b>. Su Chrome per PC: clic destro sulla selezione → <b>Traduci selezione in italiano</b>.</p>'+t.split(/\n\n/).map(x=>'<p>'+x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c])+'</p>').join('');
   document.getElementById('vinfo').textContent='Pagina '+VIS.p+' di '+VIS.doc.numPages+' · testo';document.getElementById('vbox').scrollTop=0;}
-function selViewer(){try{const se=window.getSelection();if(!se||se.isCollapsed)return '';const tl=document.getElementById('vtl');if(!tl.contains(se.anchorNode)&&!tl.contains(se.focusNode))return '';const t=se.toString().replace(/\s+/g,' ').trim();return /[A-Za-zÀ-ÿ]{2,}/.test(t)?t:'';}catch(e){return '';}}
+function selViewer(){try{const se=window.getSelection();if(!se||se.isCollapsed)return '';const tl=document.getElementById('vbox');if(!tl.contains(se.anchorNode)&&!tl.contains(se.focusNode))return '';const t=se.toString().replace(/\s+/g,' ').trim();return /[A-Za-zÀ-ÿ]{2,}/.test(t)?t:'';}catch(e){return '';}}
 function gptStato(){const b=document.getElementById('gptbtn');if(!b)return;const it=VIS&&(VIS.k==='mac'||VIS.k==='macnt');b.hidden=!!it;const t=selViewer();if(VIS)VIS.copiato=t;b.disabled=!t;
   b.title=t?'Traduci il testo selezionato':'Seleziona un testo nel PDF per attivarlo';}
-(function(){const on=()=>{const e=document.querySelector('#vtl .endOfContent');if(e)e.classList.add('active');},off=()=>{const e=document.querySelector('#vtl .endOfContent');if(e)e.classList.remove('active');};
-  document.addEventListener('mousedown',ev=>{if(ev.target.closest&&ev.target.closest('#vtl'))on();});document.addEventListener('mouseup',off);
-  document.addEventListener('touchstart',ev=>{if(ev.target.closest&&ev.target.closest('#vtl'))on();},{passive:true});document.addEventListener('touchend',off);})();
+(function(){const on=()=>{const e=document.querySelectorAll('#vbox .endOfContent');e.forEach(x=>x.classList.add('active'));},off=()=>{document.querySelectorAll('#vbox .endOfContent').forEach(x=>x.classList.remove('active'));};
+  document.addEventListener('mousedown',ev=>{if(ev.target.closest&&ev.target.closest('#vbox .textLayer'))on();});document.addEventListener('mouseup',off);
+  document.addEventListener('touchstart',ev=>{if(ev.target.closest&&ev.target.closest('#vbox .textLayer'))on();},{passive:true});document.addEventListener('touchend',off);})();
+document.addEventListener('DOMContentLoaded',()=>{});
+setTimeout(()=>{const b=document.getElementById('vbox');if(b)b.addEventListener('scroll',()=>{altrePagine();},{passive:true});},0);
 document.addEventListener('selectionchange',()=>{if(!document.getElementById('viewer').hidden)gptStato();});
 function vGpt(){if(!VIS)return;const t=selViewer()||VIS.copiato;if(!t)return;VIS.copiato=t;
   const msg='Traduci in italiano il testo seguente in modo fedele, senza alterare, riassumere o aggiungere nulla. Mantieni i riferimenti biblici così come sono.\n\n'+VIS.copiato;
@@ -431,12 +448,12 @@ function vGpt(){if(!VIS)return;const t=selViewer()||VIS.copiato;if(!t)return;VIS
   window.open(url,'_blank');}
 function vTesto(){if(!VIS)return;VIS.testo=!VIS.testo;document.getElementById('vcanvas').hidden=VIS.testo;document.getElementById('vtext').hidden=!VIS.testo;
   document.getElementById('vtbtn').textContent=VIS.testo?'Pagina':'Testo';disegna();}
-function vPag(d){if(!VIS)return;const n=VIS.p+d;if(n<1||n>VIS.doc.numPages)return;VIS.p=n;VIS.copiato='';gptStato();disegna();}
-function vZoomSet(v){if(!VIS)return;v=Math.round(+v||100);v=Math.min(300,Math.max(50,v));VIS.z=v/100;document.getElementById('vzin').value=v;disegna();}
+function vPag(d){if(!VIS)return;const n=VIS.p+d;if(n<1||n>VIS.doc.numPages)return;const box=document.getElementById('vbox'),el=box.querySelector(`.vpage[data-p="${n}"]`);if(el){box.scrollTop=el.offsetTop-8;VIS.p=n;aggPag();}else disegna(n);}
+function vZoomSet(v){if(!VIS)return;v=Math.round(+v||100);v=Math.min(300,Math.max(50,v));VIS.z=v/100;document.getElementById('vzin').value=v;disegna(VIS.p);}
 function vZoom(d){if(!VIS)return;vZoomSet(Math.round((VIS.z||1)*100)+d);}
-function vVai(v){if(!VIS)return;v=Math.round(+v);if(!v)return aggPag();v=Math.min(VIS.doc.numPages,Math.max(1,v));VIS.p=v;gptStato();disegna();}
+function vVai(v){if(!VIS)return;v=Math.round(+v);if(!v)return aggPag();v=Math.min(VIS.doc.numPages,Math.max(1,v));disegna(v);}
 function aggPag(){if(!VIS)return;document.getElementById('vpgin').value=VIS.p;document.getElementById('vpgin').max=VIS.doc.numPages;document.getElementById('vtot').textContent=VIS.doc.numPages;document.getElementById('vzin').value=Math.round((VIS.z||1)*100);}
-function chiudiPdf(){document.getElementById('viewer').hidden=true;document.body.style.overflow='';if(VIS){VIS.testo=false;VIS.z=1;}document.getElementById('vcanvas').hidden=false;document.getElementById('vtext').hidden=true;document.getElementById('vtext').innerHTML='';document.getElementById('vtbtn').textContent='Testo';}
+function chiudiPdf(){document.getElementById('viewer').hidden=true;document.body.style.overflow='';if(VIS){VIS.z=1;VIS.copiato='';}document.getElementById('vbox').innerHTML='';}
 function chiaveV(){return 'ult:'+st.b+'-'+st.c+'-'+st.v;}
 function ultimo(){try{return sessionStorage.getItem(chiaveV());}catch(e){return null;}}
 function segna(n){try{sessionStorage.setItem(chiaveV(),n);}catch(e){}document.querySelectorAll('.links .link').forEach(x=>x.classList.toggle('ultimo',x.querySelector('strong').textContent===n));}
