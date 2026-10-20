@@ -92,7 +92,7 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .pdfslot{flex-wrap:wrap}.pdfslot small{display:block}.pdfslot small.ok{color:#2e9e5b;font-weight:600}
 .slotbtn{display:flex;gap:8px}.mini{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 14px;font:600 14px var(--font);cursor:pointer;white-space:nowrap}
 .vl,.vc,.vr{display:flex;align-items:center;gap:6px}.vr{justify-content:flex-end;flex-wrap:wrap}.vc{justify-content:center}
-.vbar .back{height:40px;padding:0 14px;display:inline-flex;align-items:center}
+.vbar .back{height:40px;padding:0 14px;display:inline-flex;align-items:center;gap:7px}.vclose .x{font-size:.85em}
 .vpg{display:flex;align-items:center;gap:6px;font-weight:700;white-space:nowrap}
 .vpg input,.vzoom input{width:64px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font:700 15px var(--font);text-align:center}
 .vzoom{display:flex;align-items:center;gap:4px}
@@ -142,7 +142,7 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 </head>
 <body>
 <div id="viewer" hidden><div class="vbar">
-  <div class="vl"><button class="back vclose" onclick="chiudiPdf()">✕ Chiudi</button><button class="back vhome" onclick="chiudiPdf();home()">Home</button></div>
+  <div class="vl"><button class="back vclose" onclick="chiudiPdf()"><span class="x">✕</span><span>Chiudi</span></button><button class="back vhome" onclick="chiudiPdf();home()">Home</button></div>
   <div class="vc"><button class="back" onclick="vPag(-1)" aria-label="Pagina precedente">‹</button>
     <label class="vpg"><span class="lbl">Pagina</span> <input id="vpgin" type="text" inputmode="numeric" autocomplete="off" onchange="vVai(this.value)" onkeydown="if(event.key==='Enter')this.blur()"> di <span id="vtot">–</span></label>
     <button class="back" onclick="vPag(1)" aria-label="Pagina successiva">›</button></div>
