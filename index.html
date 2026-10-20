@@ -386,15 +386,15 @@ let PDFJS=null;
 function caricaPdfjs(){return PDFJS||(PDFJS=new Promise((ok,ko)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   sc.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';ok(pdfjsLib);};sc.onerror=()=>ko(new Error('rete'));document.head.appendChild(sc);}));}
 async function salvaPdf(k,input){const f=input.files&&input.files[0];if(!f)return;const st=document.getElementById('st-'+k);st.textContent='Salvataggio…';
-  try{const buf=await f.arrayBuffer();await dbPut(k,new Blob([buf],{type:'application/pdf'}));await dbPut(k+':info',{nome:f.name,mb:(f.size/1048576).toFixed(1)});
+  try{const buf=await f.arrayBuffer();await dbPut(k,buf);await dbPut(k+':info',{nome:f.name,mb:(f.size/1048576).toFixed(1)});
     if(navigator.storage&&navigator.storage.persist)try{await navigator.storage.persist();}catch(e){}
-    await aggiornaPres();render();}catch(e){st.textContent='Non sono riuscito a salvarlo: lo spazio sul dispositivo potrebbe non bastare.';}}
+    await aggiornaPres();render();}catch(e){st.textContent='Non sono riuscito a salvarlo ('+((e&&(e.name||e.message))||'errore')+'). Riprova.';}}
 async function togliPdf(k){await dbDel(k);await dbDel(k+':info');await aggiornaPres();render();}
 let VIS=null;
 async function apriPdf(k,pagina){const ov=document.getElementById('viewer');ov.hidden=false;document.body.style.overflow='hidden';
   const info=document.getElementById('vinfo');info.hidden=true;document.getElementById('vtot').textContent='…';document.getElementById('vbox').innerHTML='';
   try{const lib=await caricaPdfjs();const blob=await dbGet(k);if(!blob)throw new Error('manca');
-    if(!VIS||VIS.k!==k){const doc=await lib.getDocument({data:await blob.arrayBuffer()}).promise;VIS={k,doc,p:1};}
+    if(!VIS||VIS.k!==k){const dati=blob instanceof ArrayBuffer?blob:await blob.arrayBuffer();const doc=await lib.getDocument({data:new Uint8Array(dati.slice(0))}).promise;VIS={k,doc,p:1};}
     VIS.copiato='';VIS.fit=null;gptStato();
     await disegna(Math.min(Math.max(1,pagina),VIS.doc.numPages));}
   catch(e){info.hidden=false;info.textContent=e.message==='rete'?'Serve internet per caricare il lettore PDF. Riprova quando sei connesso.':e.message==='manca'?'Non trovo il PDF su questo dispositivo: aggiungilo da «I miei PDF».':'Non riesco ad aprire il PDF ('+e.message+').';}}
