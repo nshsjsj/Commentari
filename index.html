@@ -130,6 +130,7 @@ button.link{width:100%;text-align:left;font:inherit;cursor:pointer}
 .vfonte{margin:0 0 14px;color:var(--muted);font-size:.78rem;text-align:right}
 .link.segn{display:flex;align-items:center;gap:10px}.sapri{flex:1;min-width:0;background:none;border:0;text-align:left;color:var(--fg);font:inherit;cursor:pointer;padding:0}
 .sapri small{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dzt small{display:block;color:var(--muted)}
 .dz{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.dzb{display:flex;gap:6px;flex-wrap:wrap}
 .mini.off{background:transparent;color:var(--muted);border:1px dashed var(--line);cursor:default}
 .link.dz:hover{background:var(--surface)!important;border-color:var(--line)!important;color:var(--fg)!important;transform:none!important}
@@ -505,22 +506,29 @@ function dist(a,b,max){if(Math.abs(a.length-b.length)>max)return 99;const m=a.le
     if(mn>max)return 99;pp=p;p=c;}return p[n];}
 function initDiz(){if(DIZ)return DIZ;const L=[];for(const [src,txt] of [['unger',DIZ_U],['zond',DIZ_Z]])for(const r of txt.split('\n')){const i=r.lastIndexOf('\t');const w=r.slice(0,i),pg=+r.slice(i+1);L.push({w,src,pg,n:nrm(w),k:fon(w)});}
   const IT=Object.keys(ITEN).map(k=>({k,n:nrm(k),f:fon(k)}));return DIZ={L,IT};}
-function cercaDiz(q){const D=initDiz(),qn=nrm(q);if(qn.length<2)return [];const qf=fon(q);
-  const tg=[{n:qn,f:qf,b:0}];
-  for(const it of D.IT){let ok=0;if(it.n===qn||it.f===qf)ok=12;else if(qn.length>=3&&it.n.startsWith(qn))ok=8;else{const mx=qf.length<=4?0:qf.length<=7?1:2;if(mx&&dist(it.f,qf,mx)<=mx)ok=6;}
-    if(ok)for(const e of ITEN[it.k])tg.push({n:nrm(e),f:fon(e),b:ok});}
-  const best=new Map();
-  for(const e of D.L){let sc=0;
-    for(const t of tg){let s=0;if(e.n===t.n)s=100;else if(e.k===t.f)s=95;else if(t.n.length>=3&&e.n.startsWith(t.n))s=82-Math.min(20,(e.n.length-t.n.length)*.6);
-      else if(t.n.length>=3&&(' '+e.n).includes(' '+t.n))s=70;
-      else{const mx=t.f.length<=3?0:t.f.length<=5?1:t.f.length<=8?2:3;if(mx){const d=dist(e.k,t.f,mx);if(d<=mx)s=62-d*9;}}
-      if(s){s+=t.b;if(s>sc)sc=s;}}
-    if(!sc)continue;const key=e.n;const g=best.get(key)||{w:e.w,sc:0,src:{}};if(sc>g.sc)g.sc=sc;if(!g.src[e.src])g.src[e.src]=e.pg;if(/^[A-Z]/.test(e.w))g.w=e.w;best.set(key,g);}
-  return [...best.values()].sort((a,b)=>b.sc-a.sc||a.w.length-b.w.length).slice(0,12);}
-let DZT=null;function suggDiz(){clearTimeout(DZT);DZT=setTimeout(()=>{const q=document.getElementById('dzq').value,box=document.getElementById('dzr');const R=cercaDiz(q);
-  if(!q.trim()){box.innerHTML='';return;}
-  if(!R.length){box.innerHTML='<p class="note">Nessuna voce trovata. Prova con un\'altra parola o con il nome inglese.</p>';return;}
-  box.innerHTML=R.map(r=>`<div class="link dz"><div><strong>${r.w}</strong></div><div class="dzb">${[['unger','Unger'],['zond','Zondervan']].map(([k,n])=>r.src[k]?(PRES[k]?`<button class="mini" onclick="apriPdf('${k}',${r.src[k]})">${n} · p. ${r.src[k]}</button>`:`<span class="mini off" title="Aggiungi il PDF da «I miei PDF»">${n}</span>`):'').join('')}</div></div>`).join('');},120);}
+function idxEng(){const D=initDiz();if(D.byN)return D;D.byN=new Map();D.byK=new Map();
+  for(const e of D.L){for(const [m,k] of [[D.byN,e.n],[D.byK,e.k]]){if(!m.has(k))m.set(k,{w:e.w,src:{}});const g=m.get(k);if(!g.src[e.src])g.src[e.src]=e.pg;if(/^[A-Z]/.test(e.w))g.w=e.w;}}
+  D.eng=[...D.byN.entries()].map(([n,g])=>({n,k:fon(g.w),w:g.w,src:g.src})).sort((a,b)=>a.n<b.n?-1:1);return D;}
+function trovaEng(t){const D=idxEng(),n=nrm(t);return D.byN.get(n)||D.byK.get(fon(t))||null;}
+const ACC_IT={gesu:'Gesù',mose:'Mosè',giosue:'Giosuè',noe:'Noè',esau:'Esaù',belzebu:'Belzebù',trinita:'Trinità',carita:'Carità',schiavitu:'Schiavitù',cattivita:'Cattività','giorno dell espiazione':"Giorno dell'espiazione",'figlio dell uomo':"Figlio dell'uomo",'arca di noe':'Arca di Noè'};
+const cap=x=>ACC_IT[x]||x.charAt(0).toUpperCase()+x.slice(1);
+function cercaDiz(q){const D=idxEng(),qn=nrm(q);if(!qn)return [];const qf=fon(q),out=[],usati=new Set();
+  const add=(it,en,g,sc)=>{const key=nrm(en);if(usati.has(key))return;usati.add(key);out.push({it,en,src:g.src,sc});};
+  // 1) parole italiane
+  for(const it of D.IT){let sc=0;
+    if(it.n===qn)sc=100;else if(it.n.startsWith(qn))sc=90-Math.min(20,it.n.length-qn.length)*.3;else if(qn.length>=2&&(' '+it.n).includes(' '+qn))sc=75;
+    else if(qn.length>=4){const mx=qf.length<=5?1:2;if(dist(it.f,qf,mx)<=mx)sc=70;}
+    if(!sc)continue;for(const en of ITEN[it.k]){const g=trovaEng(en);if(g)add(cap(it.k),g.w,g,sc);}}
+  // 2) voci inglesi
+  for(const e of D.eng){let sc=0;
+    if(e.n===qn)sc=85;else if(e.n.startsWith(qn))sc=74-Math.min(20,e.n.length-qn.length)*.3;else if(qn.length>=3&&(' '+e.n).includes(' '+qn))sc=55;
+    else if(qn.length>=4){const mx=qf.length<=5?1:qf.length<=8?2:3;const d=dist(e.k,qf,mx);if(d<=mx)sc=52-d*8;}
+    if(sc)add(null,e.w,e,sc);}
+  return out.sort((a,b)=>b.sc-a.sc||(a.it||a.en).localeCompare(b.it||b.en,'it')).slice(0,60);}
+let DZT=null;function suggDiz(){clearTimeout(DZT);DZT=setTimeout(()=>{const q=document.getElementById('dzq').value,box=document.getElementById('dzr');
+  if(!q.trim()){box.innerHTML='';return;}const R=cercaDiz(q);
+  if(!R.length){box.innerHTML='<p class="note">Nessuna voce trovata. Prova con un\'altra parola.</p>';return;}
+  box.innerHTML=R.map(r=>`<div class="link dz"><div class="dzt"><strong>${r.it||r.en}</strong>${r.it?`<small>${r.en}</small>`:''}</div><div class="dzb">${[['unger','Unger'],['zond','Zondervan']].map(([k,n])=>r.src[k]?(PRES[k]?`<button class="mini" onclick="apriPdf('${k}',${r.src[k]})">${n} · p. ${r.src[k]}</button>`:`<span class="mini off" title="Aggiungi il PDF da «I miei PDF»">${n}</span>`):'').join('')}</div></div>`).join('');},60);}
 
 function chiaveV(){return 'ult:'+st.b+'-'+st.c+'-'+st.v;}
 function ultimo(){try{return sessionStorage.getItem(chiaveV());}catch(e){return null;}}
@@ -569,7 +577,7 @@ function render(){
   crumb();
   if(cm===null&&scr==='d'){
     view.innerHTML=`<h2 class="ref">Dizionario</h2><form class="cerca" onsubmit="event.preventDefault();suggDiz()"><input id="dzq" type="search" placeholder="Es. Melchisedec, tabernacolo, farisei…" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="suggDiz()"></form>
-      <div id="dzr" class="links" style="margin-top:12px"></div><p class="note">Puoi scrivere in italiano o in inglese, anche con errori: le voci dei dizionari sono in inglese.</p>`;
+      <div id="dzr" class="links" style="margin-top:12px"></div><p class="note">Scrivi anche solo l'iniziale: i risultati si affinano mentre scrivi. In grassetto la parola italiana, sotto la voce inglese del dizionario.</p>`;
     setTimeout(()=>{const i=document.getElementById('dzq');if(i)i.focus();},50);window.scrollTo(0,0);return;}
   if(cm===null&&scr==='s'){const a=segn();
     if(!RIV&&a.length)caricaRiv().then(d=>{if(d&&scr==='s')render();});
