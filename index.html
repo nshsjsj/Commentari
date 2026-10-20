@@ -549,7 +549,7 @@ function links(b,c,v){
   if(AT) L.push(["Keil & Delitzsch","Commentario all'Antico Testamento, sul capitolo "+c,`https://biblehub.com/commentaries/kad/${bh}/${c}.htm`]);
   if(GODET[i]) L.push(["Frédéric Godet","Commentario a "+GODET[i][0]+" (PDF da scaricare): cerca il capitolo "+c,GODET[i][1]]);
   if(!AT) L.push(["Bengel (Gnomon)","Gnomon del Nuovo Testamento, sul capitolo "+c,`https://biblehub.com/commentaries/bengel/${bh}/${c}.htm`]);
-  L.push(["Thomas Constable","Expository Notes (Sonic Light), sul capitolo "+c,`https://www.studylight.org/commentaries/eng/dcc/${s}-${c}.html`]);
+  L.push(["Thomas Constable","Expository Notes, al versetto "+c+":"+v,`https://www.studylight.org/commentaries/eng/dcc/${s}-${c}.html#verse-${v}`]);
   L.push(["David Guzik (Enduring Word)","Commentario sul capitolo "+c,`https://enduringword.com/bible-commentary/${b[2]}-${c}/`]);
   L.push(["Albert Barnes","Notes on the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/barnes/${bh}/${c}.htm`]);
   L.push(["John Gill","Exposition of the Bible, sul capitolo "+c,`https://biblehub.com/commentaries/gill/${bh}/${c}.htm`]);
