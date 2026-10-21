@@ -149,6 +149,8 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
   .back:hover{background:var(--accent);transform:scale(1.06)}
 }
 @media (prefers-reduced-motion:reduce){.btn:hover,.link:hover,.scelta:hover,.az:hover,.sec:hover,.back:hover{transform:none}}
+.passa{display:block;width:100%;margin:0 0 14px;padding:12px 16px;border:none;border-radius:12px;background:#7c3aed;color:#fff;font:inherit;font-weight:600;text-align:left;cursor:pointer}
+.passa:hover,.passa:focus-visible{background:#c4b5fd;color:#fff;outline:none}
 </style>
 
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}*{box-sizing:border-box}</style>
@@ -641,11 +643,11 @@ function render(){
       ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
       ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`],
       ['NET Bible (note dei traduttori)','Greco/ebraico, scelte di traduzione e varianti del testo',`https://netbible.org/bible/${encodeURIComponent((bh==='songs'?'song_of_solomon':bh).replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())).replace(/%20/g,'+')}+${st.c}:${st.v}`]];
-      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>`;window.scrollTo(0,0);return;}
+      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button class="passa" onclick="mode='c';go(${st.b},${st.c},${st.v})">📖 Vai ai Commentari ›</button><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>`;window.scrollTo(0,0);return;}
     const ii=B.indexOf(b),on=links(b,st.c,st.v),O=n=>on.find(l=>l[0].startsWith(n)),P=k=>{const m=MIEI.find(x=>x[0]===k);if(!m||!PRES[k])return null;const pg=pagina(k,ii,st.c,st.v);return pg?['📄 '+m[1],'PDF dal tuo dispositivo, pagina '+pg,null,k,pg]:null;};
     const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('mac'),P('macnt')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
     const sg=haSegn(st.b,st.c,st.v),tv=RIV?testoV(st.b,st.c,st.v):'';
-    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div>
+    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><button class="passa" onclick="mode='p';go(${st.b},${st.c},${st.v})">🔍 Vai allo Studio del versetto ›</button><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div>
 `;
   }
   window.scrollTo(0,0);
