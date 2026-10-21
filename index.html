@@ -639,10 +639,11 @@ function render(){
     const b=B[st.b];
     if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,P=[
       ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
-      ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`]];
+      ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`],
+      ['NET Bible (note dei traduttori)','Greco/ebraico, scelte di traduzione e varianti del testo',`https://netbible.org/bible/${encodeURIComponent((bh==='songs'?'song_of_solomon':bh).replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())).replace(/%20/g,'+')}+${st.c}:${st.v}`]];
       view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>`;window.scrollTo(0,0);return;}
     const ii=B.indexOf(b),on=links(b,st.c,st.v),O=n=>on.find(l=>l[0].startsWith(n)),P=k=>{const m=MIEI.find(x=>x[0]===k);if(!m||!PRES[k])return null;const pg=pagina(k,ii,st.c,st.v);return pg?['📄 '+m[1],'PDF dal tuo dispositivo, pagina '+pg,null,k,pg]:null;};
-    const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('moody'),P('mac'),P('macnt'),O('Albert Barnes')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
+    const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('mac'),P('macnt')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
     const sg=haSegn(st.b,st.c,st.v),tv=RIV?testoV(st.b,st.c,st.v):'';
     view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div>
 `;
