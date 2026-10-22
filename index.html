@@ -152,6 +152,7 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 #crumbs .back.passab{margin-left:auto;padding:10px 14px}
 #crumbs .passab + .homeb{margin-left:6px}
 #crumbs .back.passab:hover,#crumbs .back.passab:focus-visible{background:#7c3aed!important;color:#fff!important;transform:scale(1.06)}
+@media (max-width:700px){.verso .col-comm{order:-1}}
 .duecol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:700px){.duecol{grid-template-columns:1fr;gap:0}}
 </style>
@@ -575,11 +576,11 @@ function crumb(){
     crumbs.innerHTML=back+`<div class="bar-title">${t}</div><button class="back homeb" onclick="home()" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>`;return;}
   if(st.b!==null){
     t=B[st.b][0]+(st.c!==null?' '+st.c:'')+(st.v!==null?':'+st.v:'');
-    if(mode==='p')t+=' · Studio';
+    
     const prev=st.v!==null?`go(${st.b},${st.c})`:st.c!==null?`go(${st.b})`:'go(null)';
     back=`<button class="back" id="back" onclick="${prev}" aria-label="Indietro">${ic}Indietro</button>`;
   }
-  const passa=(scr==='c'&&st.v!==null)?(mode==='p'?`<button class="back passab" onclick="mode='c';go(${st.b},${st.c},${st.v})">Commentari</button>`:`<button class="back passab" onclick="mode='p';go(${st.b},${st.c},${st.v})">Studio</button>`):'';
+  const passa='';
   crumbs.innerHTML=back+`<div class="bar-title">${t}</div>`+passa+`<button class="back homeb" onclick="home()" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>Home</button>`;
 }
 
@@ -601,8 +602,8 @@ function render(){
     window.scrollTo(0,0);return;}
   if(cm===null&&scr==='home'){
     view.innerHTML=`<div class="scelte">
-      <button class="scelta" onclick="apri('c')"><strong>Commentari</strong><small>Scegli libro, capitolo e versetto e apri i commentari</small><span class="go">›</span></button>
-      <button class="scelta" onclick="apri('p')"><strong>Studio del versetto</strong><small>Parole in ebraico e greco con il significato, e versetti correlati</small><span class="go">›</span></button>
+      <button class="scelta" onclick="apri('c')"><strong>Commentari</strong><small>Scegli libro, capitolo e versetto: commentari e studio del versetto insieme</small><span class="go">›</span></button>
+      
       <button class="scelta" onclick="apri('d')"><strong>Dizionario</strong><small>Cerca una parola, un nome o un luogo biblico in Unger e Zondervan</small><span class="go">›</span></button>
       ${segn().length?`<button class="scelta piccola" onclick="apri('s')"><strong>★ Segnalibri</strong><small>${segn().length} versett${segn().length===1?'o salvato':'i salvati'}</small><span class="go">›</span></button>`:''}
       ${!PRESOK||MIEI.every(m=>PRES[m[0]])?'':`<button class="scelta piccola" onclick="apri('f')"><strong>📄 I miei PDF</strong><small>Aggiungi i tuoi commentari in PDF: restano solo su questo dispositivo</small><span class="go">›</span></button>`}</div>
@@ -643,16 +644,16 @@ function render(){
     view.innerHTML=`<div class="label">Versetto</div><div class="grid">${Array.from({length:n},(_,i)=>`<button class="btn" onclick="go(${st.b},${st.c},${i+1})">${i+1}</button>`).join('')}</div>`;
   }else{
     const b=B[st.b];
-    if(mode==='p'){const bh=b[1],AT=B.indexOf(b)<39,P=[
+    const bh=b[1],AT=B.indexOf(b)<39,SP=[
       ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
       ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`],
       ['NET Bible (note dei traduttori)','Greco/ebraico, scelte di traduzione e varianti del testo',`https://netbible.org/bible/${encodeURIComponent((bh==='songs'?'song_of_solomon':bh).replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())).replace(/%20/g,'+')}+${st.c}:${st.v}`],
       ['Precept Austin','Commenti versetto per versetto (filtra: salta le parti devozionali)',`https://www.preceptaustin.org/bybook/${B.indexOf(b)+1}`]];
-      view.innerHTML=`<h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><div class="links">${P.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div>`;window.scrollTo(0,0);return;}
+      
     const ii=B.indexOf(b),on=links(b,st.c,st.v),O=n=>on.find(l=>l[0].startsWith(n)),P=k=>{const m=MIEI.find(x=>x[0]===k);if(!m||!PRES[k])return null;const pg=pagina(k,ii,st.c,st.v);return pg?['📄 '+m[1],'PDF dal tuo dispositivo, pagina '+pg,null,k,pg]:null;};
     const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('mac'),P('macnt')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
     const sg=haSegn(st.b,st.c,st.v),tv=RIV?testoV(st.b,st.c,st.v):'';
-    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div>
+    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="duecol verso"><div class="col-studio"><div class="label">Studio del versetto</div><div class="links">${SP.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div></div><div class="col-comm"><div class="label">Commentari</div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div></div></div>
 `;
   }
   window.scrollTo(0,0);
