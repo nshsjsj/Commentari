@@ -152,7 +152,6 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
 #crumbs .back.passab{margin-left:auto;padding:10px 14px}
 #crumbs .passab + .homeb{margin-left:6px}
 #crumbs .back.passab:hover,#crumbs .back.passab:focus-visible{background:#7c3aed!important;color:#fff!important;transform:scale(1.06)}
-@media (max-width:700px){.verso .col-comm{order:-1}}
 @media (min-width:701px){.verso .link{min-height:106px;box-sizing:border-box}}
 .duecol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:700px){.duecol{grid-template-columns:1fr;gap:0}}
@@ -648,13 +647,12 @@ function render(){
     const bh=b[1],AT=B.indexOf(b)<39,SP=[
       ['Parole e significato','Ogni parola in '+(AT?'ebraico':'greco')+', con pronuncia, traduzione e significato',`https://biblehub.com/text/${bh}/${st.c}-${st.v}.htm`],
       ['Versetti correlati','I passi della Bibbia collegati a questo versetto',`https://biblehub.com/crossref/${bh}/${st.c}-${st.v}.htm`],
-      ['NET Bible (note dei traduttori)','Greco/ebraico, scelte di traduzione e varianti del testo',`https://netbible.org/bible/${encodeURIComponent((bh==='songs'?'song_of_solomon':bh).replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())).replace(/%20/g,'+')}+${st.c}:${st.v}`],
-      ['Precept Austin','Commenti versetto per versetto (filtra: salta le parti devozionali)',`https://www.preceptaustin.org/bybook/${B.indexOf(b)+1}`]];
+      ['NET Bible (note dei traduttori)','Greco/ebraico, scelte di traduzione e varianti del testo',`https://netbible.org/bible/${encodeURIComponent((bh==='songs'?'song_of_solomon':bh).replace(/_/g,' ').replace(/\b\w/g,x=>x.toUpperCase())).replace(/%20/g,'+')}+${st.c}:${st.v}`]];
       
     const ii=B.indexOf(b),on=links(b,st.c,st.v),O=n=>on.find(l=>l[0].startsWith(n)),P=k=>{const m=MIEI.find(x=>x[0]===k);if(!m||!PRES[k])return null;const pg=pagina(k,ii,st.c,st.v);return pg?['📄 '+m[1],'PDF dal tuo dispositivo, pagina '+pg,null,k,pg]:null;};
-    const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('mac'),P('macnt')].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
+    const ORD=[O('Thomas Constable'),P('ivp'),P('ivpnt'),P('mac'),P('macnt'),['Precept Austin','Versetto per versetto · filtra: salta le parti devozionali',`https://www.preceptaustin.org/bybook/${ii+1}`]].filter(Boolean).map(l=>{const NM={'Thomas Constable':'Constable','Albert Barnes':'Barnes',ivp:'IVP',ivpnt:'IVP',moody:'Moody',mac:'MacDonald',macnt:'MacDonald'};return [NM[l[3]]||NM[l[0]]||l[0],l[1],l[2],l[3],l[4]];});
     const sg=haSegn(st.b,st.c,st.v),tv=RIV?testoV(st.b,st.c,st.v):'';
-    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="duecol verso"><div class="col-studio"><div class="label">Studio del versetto</div><div class="links">${SP.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div></div><div class="col-comm"><div class="label">Commentari</div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div></div></div>
+    view.innerHTML=`<div class="refrow"><h2 class="ref">${b[0]} ${st.c}:${st.v}</h2><button id="stella" class="stella ${sg?'on':''}" onclick="toggleSegn()" title="${sg?'Togli dai segnalibri':'Aggiungi ai segnalibri'}">${sg?'★':'☆'}</button></div><div class="duecol verso"><div class="col-comm"><div class="label">Commentari</div><div class="links">${ORD.map(l=>l[2]?`<a class="link ${ultimo()===l[0]?'ultimo':''}" href="${l[2]}" onclick="segna('${l[0]}')"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`:`<button class="link ${ultimo()===l[0]?'ultimo':''}" onclick="segna('${l[0]}');apriPdf('${l[3]}',${l[4]})"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></button>`).join('')}</div></div><div class="col-studio"><div class="label">Studio del versetto</div><div class="links">${SP.map(l=>`<a class="link" href="${l[2]}"><div><strong>${l[0]}</strong><small>${l[1]}</small></div><span class="go">›</span></a>`).join('')}</div></div></div>
 `;
   }
   window.scrollTo(0,0);
