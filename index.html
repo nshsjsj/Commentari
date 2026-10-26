@@ -165,7 +165,7 @@ h2.ref{font-size:1.6rem;font-weight:800;margin:6px 0 4px;letter-spacing:-.01em}
   <div class="vc"><button class="back" onclick="vPag(-1)" aria-label="Pagina precedente">‹</button>
     <label class="vpg"><span class="lbl">Pagina</span> <input id="vpgin" type="text" inputmode="numeric" autocomplete="off" onchange="vVai(this.value)" onkeydown="if(event.key==='Enter')this.blur()"> di <span id="vtot">–</span></label>
     <button class="back" onclick="vPag(1)" aria-label="Pagina successiva">›</button></div>
-  <div class="vr"><button class="gpt" id="gptbtn" onclick="vGpt()" disabled>Traduci con ChatGPT</button><span class="vzoom"><button class="back" onclick="vZoom(-10)" aria-label="Riduci">−</button><input id="vzin" type="text" value="100" inputmode="numeric" autocomplete="off" onchange="vZoomSet(this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span>%</span><button class="back" onclick="vZoom(10)" aria-label="Ingrandisci">+</button></span><span id="vtbtn" hidden></span></div>
+  <div class="vr"><button class="gpt" id="gptbtn" onclick="vGpt()">Apri ChatGPT</button><span class="vzoom"><button class="back" onclick="vZoom(-10)" aria-label="Riduci">−</button><input id="vzin" type="text" value="100" inputmode="numeric" autocomplete="off" onchange="vZoomSet(this.value)" onkeydown="if(event.key==='Enter')this.blur()"><span>%</span><button class="back" onclick="vZoom(10)" aria-label="Ingrandisci">+</button></span><span id="vtbtn" hidden></span></div>
   <span id="vinfo" hidden></span></div>
   <div id="vbox"></div></div>
 <header class="bar"><div class="bar-in" id="crumbs"></div></header>
@@ -474,19 +474,14 @@ async function mostraTesto(){const t=await testoPagina();
   const el=document.getElementById('vtext');el.innerHTML='<p class="vhint">Tieni premuto (o seleziona col mouse) una parte del testo e scegli <b>Traduci</b>. Su Chrome per PC: clic destro sulla selezione → <b>Traduci selezione in italiano</b>.</p>'+t.split(/\n\n/).map(x=>'<p>'+x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c])+'</p>').join('');
   document.getElementById('vinfo').textContent='Pagina '+VIS.p+' di '+VIS.doc.numPages+' · testo';document.getElementById('vbox').scrollTop=0;}
 function selViewer(){try{const se=window.getSelection();if(!se||se.isCollapsed)return '';const tl=document.getElementById('vbox');if(!tl.contains(se.anchorNode)&&!tl.contains(se.focusNode))return '';const t=se.toString().replace(/\s+/g,' ').trim();return /[A-Za-zÀ-ÿ]{2,}/.test(t)?t:'';}catch(e){return '';}}
-function gptStato(){const b=document.getElementById('gptbtn');if(!b)return;const it=VIS&&(VIS.k==='mac'||VIS.k==='macnt');b.hidden=!!it;const t=selViewer();if(VIS)VIS.copiato=t;b.disabled=!t;
-  b.title=t?'Traduci il testo selezionato':'Seleziona un testo nel PDF per attivarlo';}
+function gptStato(){const b=document.getElementById('gptbtn');if(!b)return;b.hidden=!!(VIS&&(VIS.k==='mac'||VIS.k==='macnt'));b.disabled=false;b.title='Apri ChatGPT';}
 (function(){const on=()=>{const e=document.querySelectorAll('#vbox .endOfContent');e.forEach(x=>x.classList.add('active'));},off=()=>{document.querySelectorAll('#vbox .endOfContent').forEach(x=>x.classList.remove('active'));};
   document.addEventListener('mousedown',ev=>{if(ev.target.closest&&ev.target.closest('#vbox .textLayer'))on();});document.addEventListener('mouseup',off);
 })();
 document.addEventListener('DOMContentLoaded',()=>{});
 setTimeout(()=>{const b=document.getElementById('vbox');if(b)b.addEventListener('scroll',()=>{altrePagine();},{passive:true});},0);
 document.addEventListener('selectionchange',()=>{if(document.getElementById('viewer').hidden)return;gptStato();const se=window.getSelection(),on=!!(se&&!se.isCollapsed&&document.getElementById('vbox').contains(se.anchorNode));document.querySelectorAll('#vbox .endOfContent').forEach(x=>x.classList.toggle('active',on));});
-function vGpt(){if(!VIS)return;const t=selViewer()||VIS.copiato;if(!t)return;VIS.copiato=t;
-  const msg='Traduci in italiano il testo seguente in modo fedele e completo, senza riassumere, aggiungere commenti o tralasciare nulla.\n\nRegole:\n- Traduci TUTTO, comprese le abbreviazioni dei libri biblici, che vanno convertite nelle abbreviazioni italiane standard (es. Gen→Gn, Exod→Es, Lev→Lv, Deut→Dt, Josh→Gs, Judg→Gdc, 1 Sam→1 Sam, Ps→Sal, Prov→Pr, Isa→Is, Jer→Ger, Ezek→Ez, Dan→Dn, Hos→Os, Zech→Zc, Mal→Ml, Matt→Mt, Mk→Mc, Lk→Lc, Jn→Gv, Acts→At, Rom→Rm, 1 Cor→1 Co, Gal→Gal, Eph→Ef, Phil→Fil, Col→Col, 1 Thess→1 Ts, 1 Tim→1 Tm, Heb→Eb, Jas→Gc, 1 Pet→1 Pt, Rev→Ap, ecc.).\n- Mantieni invariati i numeri di capitolo e versetto.\n- Traduci anche le altre abbreviazioni e sigle (es. cf.→cfr., e.g.→per es., i.e.→cioè, v./vv.→v./vv., NT→NT, OT→AT, LXX→LXX).\n- Le parole in ebraico o greco traslitterate lasciale come sono, in corsivo se possibile.\n- I nomi propri vanno resi nella forma italiana usata nelle Bibbie evangeliche (es. Isaiah→Isaia, Zechariah→Zaccaria).\n\nTesto:\n\n'+VIS.copiato;
-  try{navigator.clipboard.writeText(msg).catch(()=>{});}catch(e){}
-  let url='https://chatgpt.com/?temporary-chat=true&q='+encodeURIComponent(msg);if(url.length>7500)url='https://chatgpt.com/?temporary-chat=true';
-  window.open(url,'_blank');}
+function vGpt(){window.open('https://chatgpt.com/','_blank');}
 function vTesto(){if(!VIS)return;VIS.testo=!VIS.testo;document.getElementById('vcanvas').hidden=VIS.testo;document.getElementById('vtext').hidden=!VIS.testo;
   document.getElementById('vtbtn').textContent=VIS.testo?'Pagina':'Testo';disegna();}
 function vPag(d){if(!VIS)return;const n=VIS.p+d;if(n<1||n>VIS.doc.numPages)return;const box=document.getElementById('vbox'),el=box.querySelector(`.vpage[data-p="${n}"]`);if(el){box.scrollTop=el.offsetTop-8;VIS.p=n;aggPag();pulisci();}}
